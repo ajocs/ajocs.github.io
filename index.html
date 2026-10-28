@@ -79,7 +79,7 @@
     /* Resultado principal em destaque, antes das visualizações, inclusive no celular. */
     .comparison-feature { margin: 16px 0; padding: 26px 28px 25px; border-left: 4px solid var(--green); }
     .comparison-feature .section-title { font-size: clamp(21px, 2.4vw, 25px); }
-    .comparison-feature .target-caption { margin: 10px 0 18px; font-size: 15px; color: var(--text); }
+    .comparison-feature .target-caption { margin: 0 0 23px; font-size: clamp(19px, 2.3vw, 25px); line-height: 1.4; font-weight: 500; letter-spacing: -.015em; color: var(--text); }
     .comparison-feature .comparison-top { display: grid; grid-template-columns: minmax(0,1.45fr) minmax(220px,.8fr); gap: 20px; align-items: start; }
     .comparison-feature .target-label { font-size: 13px; }
     .comparison-feature .target-value { font-size: clamp(35px, 5vw, 49px); line-height: 1.12;
@@ -173,7 +173,7 @@
   <main>
     <header>
       <h1 id="page-heading">Quanto vale minha bolsa?</h1>
-      <p class="intro" id="page-intro">O que aconteceria se as bolsas de pesquisa tivessem acompanhado a inflação? Compare o poder de compra das bolsas em abril de 2013 e março de 2023, quando ocorreram os últimos reajustes, com setembro de 2026.</p>
+      <p class="intro" id="page-intro">O que aconteceria se as bolsas de pós-graduação da CAPES e do CNPq tivessem acompanhado a inflação? Compare o poder de compra das bolsas de mestrado, doutorado e pós-doutorado em abril de 2013 e março de 2023, quando ocorreram os últimos reajustes, com setembro de 2026.</p>
     </header>
     <div class="top-panels">
     <section class="panel selector-panel" aria-label="Escolha da bolsa">
@@ -223,8 +223,7 @@
     <section class="panel comparison-feature" aria-labelledby="comparison-title">
       <div class="comparison-top">
         <div>
-          <h2 class="section-title" id="comparison-title">Quanto deveria valer a bolsa hoje?</h2>
-          <p class="target-caption">Para ter hoje o <strong>mesmo poder de compra</strong> que tinha <strong id="comparison-base">em abril de 2013</strong>, a bolsa deveria ser:</p>
+          <h2 class="target-caption" id="comparison-title">Para ter hoje o <strong>mesmo poder de compra</strong> que tinha <strong id="comparison-base">em abril de 2013</strong>, a bolsa de <strong id="comparison-kind">mestrado</strong> deveria ser:</h2>
           <span class="target-label">Valor necessário · set/2026</span>
           <strong class="target-value" id="bar-corrected-label" aria-live="polite">—</strong>
         </div>
@@ -250,7 +249,7 @@
       <h2 class="section-title" id="power-title">Poder de compra da bolsa</h2>
       <p class="section-sub" id="power-description">Referência fixa: abril de 2013 (100%). Reajuste em fevereiro/2023.</p>
       <div class="plotbox"><svg id="power-chart" viewBox="0 0 1030 240" role="img" aria-label="Poder de compra da bolsa desde abril de 2013, em porcentagem"></svg></div>
-      <p class="footnote">100% = poder de compra em abril/2013. Dados mensais de abr/2013 a set/2026.</p>
+      <p class="footnote">100% = poder de compra em abril/2013. Dados mensais de abr/2013 a set/2026. Os valores consideram as mensalidades de referência, não eventuais complementações institucionais.</p>
     </section>
     <details class="sources">
       <summary>Fontes utilizadas</summary>
@@ -450,6 +449,7 @@ function render(){
   $('actual-value').textContent=money(historical);
   $('actual-desc').textContent='Valor histórico nominal';
   $('comparison-base').textContent='em '+formatMonth(base).toLowerCase();
+  $('comparison-kind').textContent=document.querySelector(`[data-kind="${kind}"]`).textContent.trim().toLowerCase();
   $('bar-corrected-label').textContent=money(adjusted);
   $('bar-actual-label').textContent=money(actual);
   $('bar-gap-label').textContent=money(gap);
@@ -474,7 +474,7 @@ function render(){
 const pageContent = {
   principal: {
     heading: 'Quanto vale minha bolsa?',
-    intro: 'O que aconteceria se as bolsas de pós-graduação da CAPES e do CNPq tivessem acompanhado a inflação? Compare o poder de compra das bolsas de mestrado, doutorado e pós-doutorado em abril de 2013 e março de 2023, quando ocorreram os últimos reajustes, com setembro de 2026. Veja também a evolução histórica desde 2013.',
+    intro: 'O que aconteceria se as bolsas de pós-graduação da CAPES e do CNPq tivessem acompanhado a inflação? Compare o poder de compra das bolsas de mestrado, doutorado e pós-doutorado em abril de 2013 e março de 2023, quando ocorreram os últimos reajustes, com setembro de 2026.',
     defaultKind: 'mestrado'
   },
   outras: {
