@@ -26,7 +26,7 @@
     .period-picker .tabs{gap:8px}
     .period-picker .tabs button{white-space:nowrap}
     .period-picker .detail{margin-top:7px;color:var(--muted);font-size:12px}
-    .stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px;margin:17px 0}
+    .stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px;margin:17px 0}
     .stat{padding:19px 20px;border:1px solid var(--edge);border-radius:15px;background:var(--pane)}
     .stat .name{color:var(--muted);font-size:13px;margin-bottom:8px}
     .stat strong{font-size:clamp(24px,2.8vw,37px);letter-spacing:-.04em;line-height:1;display:block;font-variant-numeric:tabular-nums}
@@ -77,24 +77,23 @@
 </head>
 <body>
 <div class="wrap">
- <header><div><div class="kicker">Bolsas de pesquisa · Brasil</div><h1>Quanto vale<br>minha bolsa?</h1><p class="intro">O que aconteceria se as bolsas de pesquisa tivessem acompanhado a inflação? Compare o poder de compra das bolsas em março de 2015 e março de 2023 — considerando os valores já vigentes em cada data — com setembro de 2026. Explore também a evolução histórica desde 2013.</p></div><span class="tag">IPCA mensal · até set/2026</span></header>
+ <header><div><div class="kicker">Bolsas de pesquisa · Brasil</div><h1>Quanto vale<br>minha bolsa?</h1><p class="intro">O que aconteceria se as bolsas de pesquisa tivessem acompanhado a inflação? Compare o poder de compra das bolsas em abril de 2013 e março de 2023 — após os respectivos reajustes — com setembro de 2026. Explore também a evolução histórica desde 2013.</p></div><span class="tag">IPCA mensal · até set/2026</span></header>
  <section class="card controls" aria-label="Filtros">
   <div><div class="control-title">Modalidade CAPES</div><div class="tabs"><button class="active" data-kind="mestrado" aria-pressed="true">Mestrado</button><button data-kind="doutorado" aria-pressed="false">Doutorado</button></div></div>
   <div class="period-picker"><div class="control-title">Mês de referência</div>
    <div class="tabs" role="group" aria-label="Escolha o mês de referência">
-    <button data-period="2015-03" aria-pressed="false">Março de 2015</button>
-    <button class="active" data-period="2023-03" aria-pressed="true">Março de 2023</button>
+    <button class="active" data-period="2013-04" aria-pressed="true">Abril de 2013</button>
+    <button data-period="2023-03" aria-pressed="false">Março de 2023</button>
    </div>
-   <div class="detail">Valores vigentes: 2015 após o reajuste de 2013; 2023 após o reajuste de fevereiro/2023.</div>
+   <div class="detail">Abril de 2013 após o reajuste daquele ano; março de 2023 após o reajuste de fevereiro de 2023.</div>
   </div>
  </section>
  <section class="stats" aria-label="Indicadores">
   <div class="stat actual"><div class="name" id="actual-heading">Bolsa em março de 2023</div><strong id="actual-value">—</strong><small id="actual-desc">Valor histórico nominal</small></div>
   <div class="stat corrected"><div class="name">Quanto deveria valer hoje</div><strong id="corrected-value">—</strong><small>Valor corrigido até set/2026</small></div>
-  <div class="stat loss"><div class="name">Diferença para a bolsa atual</div><strong id="loss-value">—</strong><small id="loss-desc">—</small></div>
  </section>
  <div class="plots">
-  <section class="card"><h2 class="sect-title">O reajuste acompanha a inflação?</h2><p class="sect-sub">Abril de 2013; março de cada ano de 2014 a 2026; e todos os meses a partir de abril/2026. Linha verde: bolsa de abril/2013 corrigida pelo IPCA.</p><div class="plotbox" id="main-plot"><svg id="line-chart" viewBox="0 0 680 340" role="img" aria-label="Histórico da bolsa nominal em comparação ao valor corrigido pelo IPCA"></svg><div class="tooltip" id="tooltip"></div></div><div class="legend"><span><i class="dot"></i>Bolsa nominal</span><span><i class="dot green"></i>Valor com correção</span></div></section>
+  <section class="card"><h2 class="sect-title">O reajuste acompanha a inflação?</h2><p class="sect-sub">Evolução mensal de abr/2013 a set/2026. A linha azul registra o reajuste em um salto; a verde tracejada acompanha o IPCA.</p><div class="plotbox" id="main-plot"><svg id="line-chart" viewBox="0 0 680 340" role="img" aria-label="Histórico da bolsa nominal em comparação ao valor corrigido pelo IPCA"></svg><div class="tooltip" id="tooltip"></div></div><div class="legend"><span><i class="dot"></i>Bolsa nominal</span><span><i class="dot green"></i>Valor com correção (tracejado)</span></div></section>
   <section class="card"><h2 class="sect-title">Quanto deveria valer a bolsa hoje?</h2><p class="sect-sub" id="comparison-description">Preservando o poder de compra de março de 2023</p>
    <div class="comparison" aria-label="Comparação da bolsa atual com o valor corrigido">
     <p class="target-caption">Para ter hoje o <strong>mesmo poder de compra</strong> que tinha <strong id="comparison-base">em abril de 2013</strong>, a bolsa deveria ser:</p>
@@ -104,7 +103,7 @@
    </div><div class="insight" id="insight"></div>
   </section>
  </div>
- <section class="card power"><h2 class="sect-title">Poder de compra da bolsa</h2><p class="sect-sub">Referência fixa: abril de 2013 (100%). O reajuste seguinte entrou em vigor em fevereiro/2023.</p><div class="plotbox"><svg id="power-chart" viewBox="0 0 1030 205" role="img" aria-label="Índice de poder de compra da bolsa em porcentagem"></svg></div><div class="mini-legend">100% = poder de compra em abril/2013. Dados mensais de abril a setembro/2026.</div></section>
+ <section class="card power"><h2 class="sect-title">Poder de compra da bolsa</h2><p class="sect-sub">Referência fixa: abril de 2013 (100%). Reajuste em fevereiro/2023.</p><div class="plotbox"><svg id="power-chart" viewBox="0 0 1030 205" role="img" aria-label="Índice de poder de compra da bolsa em porcentagem"></svg></div><div class="mini-legend">100% = poder de compra em abril/2013. Dados mensais de abril a setembro/2026.</div></section>
  <details class="sources"><summary>Fontes utilizadas</summary>
   <nav class="source-links" aria-label="Fontes oficiais">
    <a href="https://www.gov.br/capes/pt-br/acesso-a-informacao/acoes-e-programas/bolsas/prestacao-de-contas/valores-de-bolsas" target="_blank" rel="noopener">Valores das bolsas — CAPES</a>
@@ -152,10 +151,7 @@ const monthNames = ['','janeiro','fevereiro','março','abril','maio','junho','ju
 const allMonths = Object.keys(ipca).sort();
 const latestMonth = allMonths[allMonths.length-1];
 const fmtMonth = ym => { const [y,m]=ym.split('-').map(Number); return `${monthNames[m][0].toUpperCase()}${monthNames[m].slice(1)} de ${y}`; };
-const periodLabels = [];
-periodLabels.push('2013-04');
-for(let y=2014;y<=2026;y++) periodLabels.push(`${y}-03`);
-for(let m=4;m<=9;m++) periodLabels.push(`2026-${String(m).padStart(2,'0')}`);
+const periodLabels = allMonths.filter(month => month >= '2013-04');
 // Data de início de vigência do valor mensal (não data em que caiu na conta).
 const scholarshipHistory = {
  mestrado:[['2013-04',1500],['2023-02',2100]],
@@ -176,9 +172,16 @@ const currentNominal={mestrado:nominalAt('mestrado',latestMonth),doutorado:nomin
 const brl=n=>n.toLocaleString('pt-BR',{style:'currency',currency:'BRL',maximumFractionDigits:0});
 const pct=n=>n.toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1})+'%';
 const ns='http://www.w3.org/2000/svg';
-let kind='mestrado',idx=data.findIndex(d=>d.month==='2023-03');
+let kind='mestrado',idx=data.findIndex(d=>d.month==='2013-04');
 function el(tag,atts={},text){const e=document.createElementNS(ns,tag);for(const [k,v] of Object.entries(atts))e.setAttribute(k,v);if(text!==undefined)e.textContent=text;return e;}
-function shouldLabel(d,i){return (d.year<2026 && (d.year%2===1 || d.year===2025)) || (d.year===2026 && [3,6,9].includes(Number(d.month.slice(5))));}
+const tickMonths=['2013-04','2015-01','2017-01','2019-01','2021-01','2023-01','2025-01','2026-09'];
+function drawXAxis(svg,x,H){
+ tickMonths.forEach((month,i)=>{
+  const pos=data.findIndex(d=>d.month===month);
+  const label=i===tickMonths.length-1?'set/2026':month.slice(0,4);
+  svg.append(el('text',{x:x(pos),y:H-9,'text-anchor':i===0?'start':i===tickMonths.length-1?'end':'middle','font-size':'12',fill:'#a1b6bd'},label));
+ });
+}
 function paths(svg,W,H,left,right,top,bottom,min,max,nom,cor,selected=idx){
  svg.replaceChildren();const x=i=>left+(W-left-right)*i/(data.length-1);const y=v=>H-bottom-(v-min)/(max-min)*(H-top-bottom);
  for(let i=0;i<5;i++){
@@ -186,10 +189,11 @@ function paths(svg,W,H,left,right,top,bottom,min,max,nom,cor,selected=idx){
   svg.append(el('line',{x1:left,y1:p,x2:W-right,y2:p,stroke:'#39515a','stroke-dasharray':'3 6','stroke-width':'1'}));
   svg.append(el('text',{x:left-9,y:p+4,'font-size':'12','text-anchor':'end',fill:'#a1b6bd'},Math.round(val).toLocaleString('pt-BR')));
  }
- data.forEach((d,i)=>{if(shouldLabel(d,i))svg.append(el('text',{x:x(i),y:H-10,'text-anchor':'middle','font-size':'11',fill:'#a1b6bd'},d.label));});
+ drawXAxis(svg,x,H);
  const line=arr=>arr.map((v,i)=>(i?'L':'M')+x(i).toFixed(1)+' '+y(v).toFixed(1)).join(' ');
- svg.append(el('path',{d:line(cor),fill:'none',stroke:'#6fe3b9','stroke-width':'3','stroke-linejoin':'round'}));
- svg.append(el('path',{d:line(nom),fill:'none',stroke:'#7ec4f5','stroke-width':'3','stroke-linejoin':'round'}));
+ svg.append(el('path',{d:line(cor),fill:'none',stroke:'#6fe3b9','stroke-width':'3','stroke-dasharray':'8 6','stroke-linejoin':'round'}));
+ const stepped=nom.map((v,i)=>i===0?'M'+x(i).toFixed(1)+' '+y(v).toFixed(1):'H'+x(i).toFixed(1)+' V'+y(v).toFixed(1)).join(' ');
+ svg.append(el('path',{d:stepped,fill:'none',stroke:'#7ec4f5','stroke-width':'3','stroke-linejoin':'round'}));
  svg.append(el('line',{x1:x(selected),y1:top-3,x2:x(selected),y2:H-bottom,stroke:'#c6d3d8','stroke-dasharray':'4 4','stroke-width':'1',opacity:'.65'}));
  [[nom[selected],'#7ec4f5'],[cor[selected],'#6fe3b9']].forEach(([val,color])=>svg.append(el('circle',{cx:x(selected),cy:y(val),r:'6',fill:color,stroke:'#0b1e27','stroke-width':'2'})));
  return {x,y};
@@ -197,7 +201,7 @@ function paths(svg,W,H,left,right,top,bottom,min,max,nom,cor,selected=idx){
 function renderLine(){
  const svg=document.getElementById('line-chart'),W=680,H=340,nominal=data.map(d=>d[kind]);
  const base=nominalAt(kind,'2013-04'), corrected=data.map(d=>base*ipcaFactor('2013-04',d.month));
- const low=Math.floor(Math.min(...nominal,...corrected)/500)*500;
+ const low=0;
  const max=Math.ceil((Math.max(...nominal,...corrected)+180)/500)*500;
  const xy=paths(svg,W,H,55,20,15,34,low,max,nominal,corrected);
  const tooltip=document.getElementById('tooltip'),plot=document.getElementById('main-plot');
@@ -213,15 +217,15 @@ function renderPower(){
  const svg=document.getElementById('power-chart'),W=1030,H=205,left=45,right=22,top=13,bottom=30;
  const base=nominalAt(kind,'2013-04');
  const series=data.map(d=>100*d[kind]/(base*ipcaFactor('2013-04',d.month)));
- const min=Math.floor((Math.min(...series)-8)/10)*10,max=Math.ceil((Math.max(100,...series)+7)/10)*10;
+ const min=0,max=Math.ceil((Math.max(100,...series)+7)/20)*20;
  const x=i=>left+(W-left-right)*i/(data.length-1),y=v=>H-bottom-(v-min)/(max-min)*(H-top-bottom);
  svg.replaceChildren();
- for(let v=Math.ceil(min/10)*10;v<=max;v+=10){
+ for(let v=0;v<=max;v+=20){
   svg.append(el('line',{x1:left,y1:y(v),x2:W-right,y2:y(v),stroke:v===100?'#6fe3b9':'#39515a','stroke-width':'1','stroke-dasharray':'4 5',opacity:v===100?'.7':'1'}));
   svg.append(el('text',{x:left-9,y:y(v)+4,'text-anchor':'end','font-size':'12',fill:'#a1b6bd'},v+'%'));
  }
- svg.append(el('path',{d:series.map((v,i)=>(i?'L':'M')+x(i).toFixed(1)+' '+y(v).toFixed(1)).join(' '),stroke:'#ffb78b','stroke-width':'3',fill:'none','stroke-linejoin':'round'}));
- data.forEach((d,i)=>{if(shouldLabel(d,i))svg.append(el('text',{x:x(i),y:H-9,'text-anchor':'middle','font-size':'11',fill:'#a1b6bd'},d.label));});
+ svg.append(el('path',{d:series.map((v,i)=>i===0?'M'+x(i).toFixed(1)+' '+y(v).toFixed(1):(data[i][kind]!==data[i-1][kind]?'L'+x(i).toFixed(1)+' '+y(100*data[i-1][kind]/(base*ipcaFactor('2013-04',data[i].month))).toFixed(1)+' L'+x(i).toFixed(1)+' '+y(v).toFixed(1):'L'+x(i).toFixed(1)+' '+y(v).toFixed(1))).join(' '),stroke:'#ffb78b','stroke-width':'3',fill:'none','stroke-linejoin':'round'}));
+ drawXAxis(svg,x,H);
  svg.append(el('circle',{cx:x(idx),cy:y(series[idx]),r:6,stroke:'#0b1e27','stroke-width':2,fill:'#ffb78b'}));
  svg.append(el('text',{x:Math.max(left+29,Math.min(W-60,x(idx))),y:Math.max(12,y(series[idx])-13),'text-anchor':'middle','font-size':'13','font-weight':'bold',fill:'#ffb78b'},pct(series[idx])));
 }
