@@ -12,14 +12,14 @@
       --bg: #f7f8f9; --surface: #fff; --panel: #f0f3f5; --border: #dce2e7;
       --text: #1c2833; --muted: #586879; --blue: #2a63b9; --green: #11836b;
       --orange: #b06926; --grid: #d9e0e5; --button: #f5f7f9;
-      --tooltip: #fff; --shadow: 0 6px 20px rgb(19 32 43 / 5%);
+      --tooltip: #fff; --green-soft: #dcefe8; --shadow: 0 6px 20px rgb(19 32 43 / 5%);
     }
     html[data-theme="dark"] {
       color-scheme: dark;
       --bg: #12181e; --surface: #1b232c; --panel: #242f39; --border: #374653;
       --text: #ebf0f3; --muted: #b0bfca; --blue: #8bb8ff; --green: #6ed8bb;
       --orange: #ffc184; --grid: #354450; --button: #242f39;
-      --tooltip: #202b34; --shadow: none;
+      --tooltip: #202b34; --green-soft: #2b5048; --shadow: none;
     }
     * { box-sizing: border-box; }
     html { scroll-behavior: smooth; }
@@ -46,6 +46,9 @@
     .intro { max-width: 870px; margin: 0; color: var(--muted); font-size: 15px; text-align: justify; hyphens: auto; }
     .panel { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 22px; box-shadow: var(--shadow); }
     .selector-panel { margin-bottom: 16px; }
+    .top-panels { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(300px, .9fr); gap: 16px; align-items: start; margin-bottom: 16px; }
+    .top-panels .selector-panel { margin-bottom: 0; }
+    .top-panels .period-panel { margin-bottom: 0; height: 100%; }
     .selector-groups { display: grid; grid-template-columns: 1fr 1fr; gap: 26px; }
     .selector-groups.single-group { grid-template-columns: 1fr; }
     .selector-section h2, .period-panel h2 { font-size: 12px; font-weight: 700; letter-spacing: .045em;
@@ -59,16 +62,36 @@
     .selector-detail, .note { color: var(--muted); font-size: 12px; margin: 10px 0 0; text-align: justify; hyphens: auto; }
     .period-panel { display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap;
       gap: 15px; margin-bottom: 0; }
+    .top-panels .period-panel { display: block; }
+    .top-panels .period-panel .note { max-width: none; margin-top: 12px; }
     .period-panel .note { max-width: 450px; margin-top: 0; }
-    .stats { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 15px; margin: 16px 0; }
-    .stat { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 19px 22px; }
-    .stat .label { color: var(--muted); font-size: 13px; margin-bottom: 8px; }
-    .stat strong { display: block; font-size: clamp(25px, 3.4vw, 36px); line-height: 1.15;
-      letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
-    .stat .foot { display: block; font-size: 12px; color: var(--muted); margin-top: 7px; }
+    /* Um único quadro para os valores históricos e corrigidos. */
+    .stats { display: grid; grid-template-columns: minmax(0, 1fr);
+      margin: 0 0 18px; padding: 0; overflow: hidden; }
+    .stat { padding: 19px 22px; min-width: 0; }
+    .stat + .stat { border-left: 1px solid var(--border); }
+    .stat .label { color: var(--muted); font-size: 13px; margin-bottom: 7px; }
+    .stat strong { display: block; font-size: clamp(23px, 3vw, 30px); line-height: 1.2;
+      letter-spacing: -.025em; font-variant-numeric: tabular-nums; }
+    .stat .foot { display: block; font-size: 12px; color: var(--muted); margin-top: 5px; }
     .stat.nominal strong { color: var(--blue); }
     .stat.corrected strong { color: var(--green); }
-    .plots { display: grid; grid-template-columns: minmax(0, 1.75fr) minmax(280px, 1fr); gap: 16px; }
+    /* Resultado principal em destaque, antes das visualizações, inclusive no celular. */
+    .comparison-feature { margin: 16px 0; padding: 26px 28px 25px; border-left: 4px solid var(--green); }
+    .comparison-feature .section-title { font-size: clamp(21px, 2.4vw, 25px); }
+    .comparison-feature .target-caption { margin: 10px 0 18px; font-size: 15px; color: var(--text); }
+    .comparison-feature .comparison-top { display: grid; grid-template-columns: minmax(0,1.45fr) minmax(220px,.8fr); gap: 20px; align-items: start; }
+    .comparison-feature .target-label { font-size: 13px; }
+    .comparison-feature .target-value { font-size: clamp(35px, 5vw, 49px); line-height: 1.12;
+      margin: 3px 0 19px; }
+    .comparison-feature .goaltrack { height: 26px; border-radius: 6px; }
+    .comparison-feature .goal-legend { font-size: 13px; margin: 12px 0 17px; }
+    .comparison-feature .insight { font-size: 14px; line-height: 1.6; margin: 0; }
+    .comparison-side { border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; background: var(--panel); }
+    .comparison-side .side-label { color: var(--muted); font-size: 13px; margin-bottom: 7px; }
+    .comparison-side .side-value { display:block; color: var(--blue); font-size: clamp(27px, 3.5vw, 34px); line-height: 1.15; font-weight: 700; letter-spacing: -.025em; font-variant-numeric: tabular-nums; }
+    .comparison-side .side-foot { display:block; color: var(--muted); font-size: 12px; margin-top: 6px; }
+    .plots { display: block; }
     .section-title { font-size: 18px; font-weight: 700; margin: 0 0 5px; line-height: 1.3; }
     .section-sub { font-size: 13px; color: var(--muted); margin: 0 0 16px; text-align: justify; hyphens: auto; }
     .plotbox { position: relative; width: 100%; }
@@ -76,7 +99,7 @@
     .legend { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 10px; color: var(--muted); font-size: 12px; }
     .line-key { display: inline-block; width: 19px; border-top: 3px solid var(--blue); vertical-align: middle; margin-right: 6px; }
     .line-key.green { border-color: var(--green); border-top-style: dashed; }
-    .target-caption { font-size: 14px; text-align: justify; hyphens: auto; color: var(--muted); margin: 24px 0 16px; }
+    .target-caption { font-size: 14px; text-align: justify; hyphens: auto; color: var(--muted); margin: 12px 0 16px; }
     .target-caption strong { color: var(--text); }
     .target-label { font-size: 12px; color: var(--muted); }
     .target-value { display: block; color: var(--green); font-size: clamp(25px, 2.8vw, 30px);
@@ -84,12 +107,12 @@
     .goaltrack { height: 16px; width: 100%; display: flex; overflow: hidden; border: 1px solid var(--border);
       background: var(--panel); border-radius: 5px; }
     .goal-filled { background: var(--blue); height: 100%; flex: 0 0 auto; }
-    .goal-missing { flex: 1; background: repeating-linear-gradient(45deg, transparent 0 5px, var(--border) 5px 7px); }
+    .goal-missing { flex: 1; min-width: 0; border-left: 2px dashed var(--green); background: repeating-linear-gradient(115deg, color-mix(in srgb, var(--green) 26%, transparent) 0 9px, color-mix(in srgb, var(--green) 5%, transparent) 9px 17px); }
     .goal-legend { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 5px 12px;
       color: var(--muted); font-size: 12px; margin: 12px 0 18px; }
     .goal-legend b { color: var(--text); font-variant-numeric: tabular-nums; }
     .swatch { display: inline-block; width: 10px; height: 10px; margin-right: 5px; border-radius: 2px; background: var(--blue); }
-    .swatch.missing { background: var(--panel); border: 1px dashed var(--green); }
+    .swatch.missing { background: repeating-linear-gradient(115deg, color-mix(in srgb, var(--green) 52%, transparent) 0 4px, transparent 4px 7px); border: 1px dashed var(--green); }
     .insight { font-size: 13px; color: var(--muted); border-top: 1px solid var(--border); padding-top: 16px;
       text-align: justify; hyphens: auto; }
     .insight strong { color: var(--text); }
@@ -111,18 +134,26 @@
     footer { margin-top: 22px; color: var(--muted); font-size: 12px; }
     [hidden] { display: none !important; }
     @media(max-width:820px) {
-      .plots { grid-template-columns: 1fr; }
       .selector-groups { gap: 14px; }
+      .top-panels { grid-template-columns: 1fr; }
     }
     @media(max-width:620px) {
       .wrap { padding: 0 15px 45px; }
       .sitebar { padding-top: 16px; }
       .page-nav { gap: 0 20px; }
       .panel, .stat { padding: 16px; }
-      .selector-groups, .stats { grid-template-columns: 1fr; }
+      .comparison-feature { padding: 20px 17px 22px; }
+      .comparison-feature .comparison-top { grid-template-columns: 1fr; gap: 16px; }
+      .comparison-feature .target-value { font-size: 39px; }
+      .comparison-feature .goaltrack { height: 25px; }
+      .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .stats .stat { padding: 14px 12px; }
+      .stats .stat strong { font-size: clamp(20px, 5.8vw, 27px); }
+      .stats .stat .label { font-size: 12px; }
+      .selector-groups { grid-template-columns: 1fr; }
       .selector-section + .selector-section { border-left: none; border-top: 1px solid var(--border); padding: 17px 0 0; }
       .period-panel .note { max-width: none; }
-      .stat strong { font-size: 30px; }
+      .stat strong { font-size: 25px; }
       .option { padding: 8px 11px; }
     }
   </style>
@@ -144,6 +175,7 @@
       <h1 id="page-heading">Quanto vale minha bolsa?</h1>
       <p class="intro" id="page-intro">O que aconteceria se as bolsas de pesquisa tivessem acompanhado a inflação? Compare o poder de compra das bolsas em abril de 2013 e março de 2023, quando ocorreram os últimos reajustes, com setembro de 2026. Veja também a evolução histórica desde 2013.</p>
     </header>
+    <div class="top-panels">
     <section class="panel selector-panel" aria-label="Escolha da bolsa">
       <div id="main-groups" class="selector-groups single-group">
         <div class="selector-section">
@@ -186,17 +218,25 @@
       </div>
       <p class="note" id="period-note">Abril de 2013 após o reajuste daquele ano; março de 2023 após o reajuste de fevereiro de 2023.</p>
     </section>
-    <section class="stats" aria-label="Valores da bolsa">
-      <div class="stat nominal">
-        <div class="label" id="actual-heading">Bolsa em abril de 2013</div>
-        <strong id="actual-value" aria-live="polite">—</strong>
-        <span class="foot" id="actual-desc">Valor histórico nominal</span>
+    </div>
+    <!-- A comparação principal aparece primeiro, também nas telas pequenas. -->
+    <section class="panel comparison-feature" aria-labelledby="comparison-title">
+      <div class="comparison-top">
+        <div>
+          <h2 class="section-title" id="comparison-title">Quanto deveria valer a bolsa hoje?</h2>
+          <p class="target-caption">Para ter hoje o <strong>mesmo poder de compra</strong> que tinha <strong id="comparison-base">em abril de 2013</strong>, a bolsa deveria ser:</p>
+          <span class="target-label">Valor necessário · set/2026</span>
+          <strong class="target-value" id="bar-corrected-label" aria-live="polite">—</strong>
+        </div>
+        <div class="comparison-side" aria-label="Valor histórico nominal">
+          <div class="side-label" id="actual-heading">Mestrado em abril de 2013</div>
+          <strong class="side-value" id="actual-value" aria-live="polite">—</strong>
+          <span class="side-foot" id="actual-desc">Valor histórico nominal</span>
+        </div>
       </div>
-      <div class="stat corrected">
-        <div class="label">Quanto valeria hoje com correção pelo IPCA</div>
-        <strong id="corrected-value" aria-live="polite">—</strong>
-        <span class="foot">Valor corrigido até set/2026</span>
-      </div>
+      <div class="goaltrack" id="goaltrack" role="img" aria-label="Comparação entre a bolsa atual e o valor corrigido"><div class="goal-filled" id="bar-actual"></div><div class="goal-missing" id="bar-missing"></div></div>
+      <div class="goal-legend"><span><i class="swatch"></i>Hoje: <b id="bar-actual-label">—</b></span><span><i class="swatch missing"></i>Falta: <b id="bar-gap-label">—</b></span></div>
+      <p class="insight" id="insight"></p>
     </section>
     <div class="plots">
       <section class="panel" aria-labelledby="history-title">
@@ -204,16 +244,6 @@
         <p class="section-sub" id="history-desc">Evolução mensal de abr/2013 a set/2026. A linha azul registra o valor nominal da bolsa; a verde tracejada acompanha o valor que a bolsa teria caso fosse corrigida pelo IPCA.</p>
         <div class="plotbox" id="main-plot"><svg id="line-chart" viewBox="0 0 680 340" role="img" aria-label="Valor mensal nominal e valor corrigido pela inflação"></svg><div class="tooltip" id="tooltip"></div></div>
         <div class="legend"><span><i class="line-key"></i>Bolsa nominal</span><span><i class="line-key green"></i>Valor com correção (tracejado)</span></div>
-      </section>
-      <section class="panel" aria-labelledby="comparison-title">
-        <h2 class="section-title" id="comparison-title">Quanto deveria valer a bolsa hoje?</h2>
-        <p class="section-sub" id="comparison-description">Preservando o poder de compra de abril de 2013</p>
-        <p class="target-caption">Para ter hoje o <strong>mesmo poder de compra</strong> que tinha <strong id="comparison-base">em abril de 2013</strong>, a bolsa deveria ser:</p>
-        <span class="target-label">Valor necessário · set/2026</span>
-        <strong class="target-value" id="bar-corrected-label">—</strong>
-        <div class="goaltrack" id="goaltrack" role="img" aria-label="Comparação entre a bolsa atual e o valor corrigido"><div class="goal-filled" id="bar-actual"></div><div class="goal-missing" id="bar-missing"></div></div>
-        <div class="goal-legend"><span><i class="swatch"></i>Hoje: <b id="bar-actual-label">—</b></span><span><i class="swatch missing"></i>Falta: <b id="bar-gap-label">—</b></span></div>
-        <p class="insight" id="insight"></p>
       </section>
     </div>
     <section class="panel power" aria-labelledby="power-title">
@@ -419,8 +449,6 @@ function render(){
   $('actual-heading').textContent=`${item.label} em ${formatMonth(base).toLowerCase()}`;
   $('actual-value').textContent=money(historical);
   $('actual-desc').textContent='Valor histórico nominal';
-  $('comparison-description').textContent='Preservando o poder de compra de '+formatMonth(base).toLowerCase();
-  $('corrected-value').textContent=money(adjusted);
   $('comparison-base').textContent='em '+formatMonth(base).toLowerCase();
   $('bar-corrected-label').textContent=money(adjusted);
   $('bar-actual-label').textContent=money(actual);
