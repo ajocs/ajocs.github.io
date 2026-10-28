@@ -1,122 +1,247 @@
 <!doctype html>
-<html lang="pt-BR">
+<html lang="pt-BR" data-theme="light">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="theme-color" content="#09151b" />
-  <title>Quanto valeria a minha bolsa corrigida pela inflação?</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f7f8f9">
+  <meta name="description" content="Compare os valores das bolsas brasileiras com a inflação acumulada pelo IPCA até setembro de 2026.">
+  <title>Quanto vale minha bolsa? — Bolsas e inflação</title>
   <style>
-    :root{color-scheme:dark;--bg:#09151b;--pane:#10222b;--pane2:#142a34;--edge:#25414b;--text:#edf6f6;--muted:#a1b6bd;--actual:#7ec4f5;--corrected:#6fe3b9;--loss:#ffb78b;--shadow:0 16px 35px #0003}
-    *{box-sizing:border-box}
-    body{margin:0;background:radial-gradient(circle at 90% 0%,#123843 0,transparent 33%),var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.5}
-    .wrap{max-width:1150px;margin:auto;padding:38px 24px 65px}
-    header{display:flex;align-items:flex-start;justify-content:space-between;gap:20px}
-    .kicker{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--corrected);font-weight:800}
-    h1{font-size:clamp(32px,5vw,54px);line-height:1.06;letter-spacing:-.04em;margin:10px 0 14px;font-weight:780}
-    .intro{color:var(--muted);max-width:700px;font-size:16px;margin:0 0 28px}
-    .tag{border:1px solid var(--edge);border-radius:100px;padding:7px 12px;white-space:nowrap;font-size:12px;color:var(--muted)}
-    .card{background:linear-gradient(145deg,#11262e,#0e1e27);border:1px solid var(--edge);box-shadow:var(--shadow);border-radius:18px;padding:22px}
-    .controls{display:flex;justify-content:space-between;align-items:end;gap:25px;flex-wrap:wrap;margin-bottom:17px}
-    .control-title{font-size:12px;font-weight:750;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px}
-    .tabs{display:flex;gap:7px;flex-wrap:wrap}
-    button{font:inherit;cursor:pointer;color:var(--muted);background:#122933;border:1px solid var(--edge);border-radius:10px;padding:9px 17px}
-    button.active{color:#05281c;background:var(--corrected);border-color:var(--corrected);font-weight:800}
-    button:focus-visible,summary:focus-visible{outline:2px solid var(--actual);outline-offset:3px}
-    .period-picker{min-width:fit-content}
-    .period-picker .tabs{gap:8px}
-    .period-picker .tabs button{white-space:nowrap}
-    .period-picker .detail{margin-top:7px;color:var(--muted);font-size:12px}
-    .stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px;margin:17px 0}
-    .stat{padding:19px 20px;border:1px solid var(--edge);border-radius:15px;background:var(--pane)}
-    .stat .name{color:var(--muted);font-size:13px;margin-bottom:8px}
-    .stat strong{font-size:clamp(24px,2.8vw,37px);letter-spacing:-.04em;line-height:1;display:block;font-variant-numeric:tabular-nums}
-    .stat small{font-size:12px;color:var(--muted);display:block;margin-top:9px}
-    .stat.actual strong{color:var(--actual)}
-    .stat.corrected strong{color:var(--corrected)}
-    .stat.loss strong{color:var(--loss)}
-    .plots{display:grid;grid-template-columns:minmax(0,2fr) minmax(280px,1fr);gap:16px;margin:17px 0}
-    .sect-title{font-size:18px;font-weight:770;letter-spacing:-.02em;margin:0 0 4px}
-    .sect-sub{font-size:13px;color:var(--muted);margin:0 0 15px}
-    .plotbox{width:100%;position:relative}
-    svg{display:block;width:100%;height:auto;overflow:visible}
-    .legend{display:flex;gap:18px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin:10px 0 0}
-    .dot{display:inline-block;width:9px;height:9px;margin-right:5px;border-radius:50%;background:var(--actual)}
-    .dot.green{background:var(--corrected)}
-    .comparison{margin:23px 0 7px}
-    .barlabel{display:flex;justify-content:space-between;gap:10px;font-size:13px;margin-bottom:7px}
-    .barlabel span{color:var(--muted)}
-    .target-caption{font-size:13px;color:var(--muted);line-height:1.5;margin:0 0 17px}
-    .target-caption strong{color:var(--text)}
-    .target-header{display:flex;align-items:flex-end;justify-content:space-between;gap:8px;margin:0 0 12px}
-    .target-header small{font-size:12px;color:var(--muted);display:block;margin-bottom:3px}
-    .target-header strong{font-size:clamp(24px,2.6vw,31px);letter-spacing:-.04em;line-height:1.1;color:var(--corrected);font-variant-numeric:tabular-nums}
-    .goaltrack{width:100%;height:20px;overflow:hidden;display:flex;background:#243844;border-radius:999px;border:1px solid #43616b;margin-bottom:12px}
-    .goal-filled{height:100%;flex:0 0 auto;min-width:0;background:var(--actual);transition:width .22s}
-    .goal-missing{height:100%;flex:1;min-width:0;border-left:2px dashed #a0f7dd;background:repeating-linear-gradient(115deg,rgba(111,227,185,.23) 0 9px,rgba(111,227,185,.035) 9px 17px)}
-    .goal-legend{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;margin-bottom:16px;font-size:12px;color:var(--muted)}
-    .goal-legend b{color:var(--text)}
-    .goal-key{display:inline-flex;align-items:center;gap:6px}
-    .goal-swatch{display:inline-block;width:13px;height:9px;border-radius:2px;background:var(--actual)}
-    .goal-swatch.gap{background:repeating-linear-gradient(115deg,rgba(111,227,185,.6) 0 4px,transparent 4px 7px);border:1px dashed var(--corrected)}
-    .insight{color:var(--muted);font-size:13px;padding:14px;border-radius:12px;background:var(--pane2);border:1px solid var(--edge)}
-    .insight strong{color:var(--text)}
-    .power{margin-top:16px}
-    .mini-legend{color:var(--muted);font-size:12px;margin-top:8px}
-    .sources{color:var(--muted);margin-top:25px;font-size:12px;max-width:850px}
-    .sources a{color:#9fe5cf;text-underline-offset:3px}
-    .sources summary{cursor:pointer;display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:700;color:var(--muted);list-style:none}
-    .sources summary::-webkit-details-marker{display:none}
-    .sources summary::after{content:"+";font-weight:800;font-size:16px;color:var(--corrected)}
-    .sources[open] summary::after{content:"−"}
-    .sources .source-links{display:flex;gap:10px 18px;flex-wrap:wrap;margin-top:12px}
-    .tooltip{position:absolute;z-index:10;pointer-events:none;background:#061319eF;border:1px solid #54747b;padding:9px 12px;border-radius:10px;font-size:12px;line-height:1.6;box-shadow:var(--shadow);display:none;min-width:140px}
-    .tooltip strong{color:white}
-    .tooltip .blue{color:var(--actual)} .tooltip .green{color:var(--corrected)}
-    @media(max-width:780px){.plots{grid-template-columns:1fr}.stats{grid-template-columns:1fr}.wrap{padding:24px 14px 55px}header{display:block}.tag{display:inline-block;margin:0 0 18px}.card{padding:16px}.stats{gap:10px}.stat{padding:15px}.stat strong{font-size:29px}.controls{align-items:stretch}.period-picker{width:100%}}
+    :root {
+      color-scheme: light;
+      --bg: #f7f8f9; --surface: #fff; --panel: #f0f3f5; --border: #dce2e7;
+      --text: #1c2833; --muted: #586879; --blue: #2a63b9; --green: #11836b;
+      --orange: #b06926; --grid: #d9e0e5; --button: #f5f7f9;
+      --tooltip: #fff; --shadow: 0 6px 20px rgb(19 32 43 / 5%);
+    }
+    html[data-theme="dark"] {
+      color-scheme: dark;
+      --bg: #12181e; --surface: #1b232c; --panel: #242f39; --border: #374653;
+      --text: #ebf0f3; --muted: #b0bfca; --blue: #8bb8ff; --green: #6ed8bb;
+      --orange: #ffc184; --grid: #354450; --button: #242f39;
+      --tooltip: #202b34; --shadow: none;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; background: var(--bg); color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      line-height: 1.55; }
+    .wrap { max-width: 1150px; margin: 0 auto; padding: 0 24px 68px; }
+    .sitebar { display: flex; align-items: center; justify-content: space-between; gap: 20px;
+      padding: 24px 0 18px; border-bottom: 1px solid var(--border); }
+    .site-name { font-size: 15px; font-weight: 700; text-decoration: none; color: var(--text); letter-spacing: -.01em; }
+    .site-actions { display: flex; align-items: center; gap: 12px; }
+    .theme-toggle { display: inline-flex; align-items: center; gap: 7px; font-size: 13px; padding: 7px 11px;
+      border: 1px solid var(--border); border-radius: 7px; background: var(--surface); color: var(--text); }
+    button, a { -webkit-tap-highlight-color: transparent; }
+    button { font: inherit; cursor: pointer; }
+    :is(button, a, summary):focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; }
+    .page-nav { display: flex; flex-wrap: wrap; gap: 0 28px; border-bottom: 1px solid var(--border); margin-bottom: 30px; }
+    .page-nav a { display: inline-block; padding: 16px 0 13px; border-bottom: 2px solid transparent;
+      color: var(--muted); text-decoration: none; font-size: 14px; font-weight: 500; }
+    .page-nav a.active { color: var(--text); border-color: var(--blue); font-weight: 700; }
+    .page-nav a:hover { color: var(--text); }
+    header { margin-bottom: 24px; }
+    h1 { margin: 0 0 12px; font-size: clamp(30px, 5vw, 42px); line-height: 1.17; font-weight: 700; letter-spacing: -.035em; }
+    .intro { max-width: 870px; margin: 0; color: var(--muted); font-size: 15px; text-align: justify; hyphens: auto; }
+    .panel { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 22px; box-shadow: var(--shadow); }
+    .selector-panel { margin-bottom: 16px; }
+    .selector-groups { display: grid; grid-template-columns: 1fr 1fr; gap: 26px; }
+    .selector-groups.single-group { grid-template-columns: 1fr; }
+    .selector-section h2, .period-panel h2 { font-size: 12px; font-weight: 700; letter-spacing: .045em;
+      color: var(--muted); margin: 0 0 10px; text-transform: uppercase; }
+    .selector-section + .selector-section { border-left: 1px solid var(--border); padding-left: 24px; }
+    .options { display: flex; flex-wrap: wrap; gap: 8px; }
+    .option { color: var(--text); background: var(--button); border: 1px solid var(--border); border-radius: 7px;
+      padding: 9px 12px; font-size: 14px; transition: border-color .12s; }
+    .option:hover { border-color: var(--blue); }
+    .option.active { color: var(--blue); border-color: var(--blue); background: var(--surface); font-weight: 700; }
+    .selector-detail, .note { color: var(--muted); font-size: 12px; margin: 10px 0 0; text-align: justify; hyphens: auto; }
+    .period-panel { display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap;
+      gap: 15px; margin-bottom: 0; }
+    .period-panel .note { max-width: 450px; margin-top: 0; }
+    .stats { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 15px; margin: 16px 0; }
+    .stat { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 19px 22px; }
+    .stat .label { color: var(--muted); font-size: 13px; margin-bottom: 8px; }
+    .stat strong { display: block; font-size: clamp(25px, 3.4vw, 36px); line-height: 1.15;
+      letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
+    .stat .foot { display: block; font-size: 12px; color: var(--muted); margin-top: 7px; }
+    .stat.nominal strong { color: var(--blue); }
+    .stat.corrected strong { color: var(--green); }
+    .plots { display: grid; grid-template-columns: minmax(0, 1.75fr) minmax(280px, 1fr); gap: 16px; }
+    .section-title { font-size: 18px; font-weight: 700; margin: 0 0 5px; line-height: 1.3; }
+    .section-sub { font-size: 13px; color: var(--muted); margin: 0 0 16px; text-align: justify; hyphens: auto; }
+    .plotbox { position: relative; width: 100%; }
+    svg { display: block; width: 100%; height: auto; overflow: visible; }
+    .legend { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 10px; color: var(--muted); font-size: 12px; }
+    .line-key { display: inline-block; width: 19px; border-top: 3px solid var(--blue); vertical-align: middle; margin-right: 6px; }
+    .line-key.green { border-color: var(--green); border-top-style: dashed; }
+    .target-caption { font-size: 14px; text-align: justify; hyphens: auto; color: var(--muted); margin: 24px 0 16px; }
+    .target-caption strong { color: var(--text); }
+    .target-label { font-size: 12px; color: var(--muted); }
+    .target-value { display: block; color: var(--green); font-size: clamp(25px, 2.8vw, 30px);
+      letter-spacing: -.02em; font-weight: 700; font-variant-numeric: tabular-nums; margin: 2px 0 16px; }
+    .goaltrack { height: 16px; width: 100%; display: flex; overflow: hidden; border: 1px solid var(--border);
+      background: var(--panel); border-radius: 5px; }
+    .goal-filled { background: var(--blue); height: 100%; flex: 0 0 auto; }
+    .goal-missing { flex: 1; background: repeating-linear-gradient(45deg, transparent 0 5px, var(--border) 5px 7px); }
+    .goal-legend { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 5px 12px;
+      color: var(--muted); font-size: 12px; margin: 12px 0 18px; }
+    .goal-legend b { color: var(--text); font-variant-numeric: tabular-nums; }
+    .swatch { display: inline-block; width: 10px; height: 10px; margin-right: 5px; border-radius: 2px; background: var(--blue); }
+    .swatch.missing { background: var(--panel); border: 1px dashed var(--green); }
+    .insight { font-size: 13px; color: var(--muted); border-top: 1px solid var(--border); padding-top: 16px;
+      text-align: justify; hyphens: auto; }
+    .insight strong { color: var(--text); }
+    .power { margin-top: 16px; }
+    .footnote { margin: 10px 0 0; color: var(--muted); font-size: 12px; text-align: justify; hyphens: auto; }
+    .tooltip { position: absolute; display: none; pointer-events: none; z-index: 3; padding: 10px 13px;
+      font-size: 12px; border-radius: 7px; border: 1px solid var(--border); color: var(--text);
+      background: var(--tooltip); box-shadow: 0 4px 14px #0002; line-height: 1.6; min-width: 165px; }
+    .tooltip .blue { color: var(--blue); } .tooltip .green { color: var(--green); }
+    .sources { margin-top: 24px; border-top: 1px solid var(--border); padding-top: 18px;
+      color: var(--muted); font-size: 13px; }
+    .sources summary { list-style: none; font-weight: 650; cursor: pointer; display: inline-block; }
+    .sources summary::-webkit-details-marker { display: none; }
+    .sources summary::after { content: ' +'; color: var(--blue); }
+    .sources[open] summary::after { content: ' −'; }
+    .source-links { display: flex; flex-wrap: wrap; gap: 7px 20px; margin: 14px 0; }
+    .source-links a { color: var(--blue); text-underline-offset: 3px; }
+    .sources p { text-align: justify; hyphens: auto; margin: 8px 0; }
+    footer { margin-top: 22px; color: var(--muted); font-size: 12px; }
+    [hidden] { display: none !important; }
+    @media(max-width:820px) {
+      .plots { grid-template-columns: 1fr; }
+      .selector-groups { gap: 14px; }
+    }
+    @media(max-width:620px) {
+      .wrap { padding: 0 15px 45px; }
+      .sitebar { padding-top: 16px; }
+      .page-nav { gap: 0 20px; }
+      .panel, .stat { padding: 16px; }
+      .selector-groups, .stats { grid-template-columns: 1fr; }
+      .selector-section + .selector-section { border-left: none; border-top: 1px solid var(--border); padding: 17px 0 0; }
+      .period-panel .note { max-width: none; }
+      .stat strong { font-size: 30px; }
+      .option { padding: 8px 11px; }
+    }
   </style>
 </head>
 <body>
 <div class="wrap">
- <header><div><div class="kicker">Bolsas de pesquisa · Brasil</div><h1>Quanto vale<br>minha bolsa?</h1><p class="intro">O que aconteceria se as bolsas de pesquisa tivessem acompanhado a inflação? Compare o poder de compra das bolsas em abril de 2013 e março de 2023 (quando houveram os últimos reajustes) com setembro de 2026. Veja também a evolução histórica desde 2013.</p></div><span class="tag">IPCA mensal · até set/2026</span></header>
- <section class="card controls" aria-label="Filtros">
-  <div><div class="control-title">Modalidade CAPES</div><div class="tabs"><button class="active" data-kind="mestrado" aria-pressed="true">Mestrado</button><button data-kind="doutorado" aria-pressed="false">Doutorado</button></div></div>
-  <div class="period-picker"><div class="control-title">Mês de referência</div>
-   <div class="tabs" role="group" aria-label="Escolha o mês de referência">
-    <button class="active" data-period="2013-04" aria-pressed="true">Abril de 2013</button>
-    <button data-period="2023-03" aria-pressed="false">Março de 2023</button>
-   </div>
-   <div class="detail">Abril de 2013 após o reajuste daquele ano; março de 2023 após o reajuste de fevereiro de 2023.</div>
+  <div class="sitebar">
+    <a class="site-name" href="?pagina=principal">Bolsas e inflação</a>
+    <div class="site-actions">
+      <button id="theme-toggle" type="button" class="theme-toggle" aria-label="Alternar tema claro e escuro" aria-pressed="false"><span id="theme-icon" aria-hidden="true">☾</span><span id="theme-label">Modo escuro</span></button>
+    </div>
   </div>
- </section>
- <section class="stats" aria-label="Indicadores">
-  <div class="stat actual"><div class="name" id="actual-heading">Bolsa em abril de 2013</div><strong id="actual-value">—</strong><small id="actual-desc">Valor histórico nominal</small></div>
-  <div class="stat corrected"><div class="name">Quanto valeria hoje com correção pelo IPCA</div><strong id="corrected-value">—</strong><small>Valor corrigido até set/2026</small></div>
- </section>
- <div class="plots">
-  <section class="card"><h2 class="sect-title">O reajuste acompanha a inflação?</h2><p class="sect-sub">Evolução mensal de abr/2013 a set/2026. A linha azul registra o valor nominal da bolsa; a verde tracejada acompanha o valor que a bolsa teria caso fosse corrigida pelo IPCA</p><div class="plotbox" id="main-plot"><svg id="line-chart" viewBox="0 0 680 340" role="img" aria-label="Histórico da bolsa nominal em comparação ao valor corrigido pelo IPCA"></svg><div class="tooltip" id="tooltip"></div></div><div class="legend"><span><i class="dot"></i>Bolsa nominal</span><span><i class="dot green"></i>Valor com correção (tracejado)</span></div></section>
-  <section class="card"><h2 class="sect-title">Quanto deveria valer a bolsa hoje?</h2><p class="sect-sub" id="comparison-description">Preservando o poder de compra de abril de 2013</p>
-   <div class="comparison" aria-label="Comparação da bolsa atual com o valor corrigido">
-    <p class="target-caption">Para ter hoje o <strong>mesmo poder de compra</strong> que tinha <strong id="comparison-base">em abril de 2013</strong>, a bolsa deveria ser:</p>
-    <div class="target-header"><div><small>Valor necessário · set/2026</small><strong id="bar-corrected-label">—</strong></div></div>
-    <div class="goaltrack" id="goaltrack" role="img" aria-label="Barra de proporção entre valor da bolsa atual e valor necessário corrigido pela inflação"><div id="bar-actual" class="goal-filled"></div><div id="bar-missing" class="goal-missing"></div></div>
-    <div class="goal-legend"><span class="goal-key"><i class="goal-swatch"></i> Hoje: <b id="bar-actual-label">—</b></span><span class="goal-key"><i class="goal-swatch gap"></i> Falta: <b id="bar-gap-label">—</b></span></div>
-   </div><div class="insight" id="insight"></div>
-  </section>
- </div>
- <section class="card power"><h2 class="sect-title">Poder de compra da bolsa</h2><p class="sect-sub">Referência fixa: abril de 2013 (100%). Reajuste em fevereiro/2023.</p><div class="plotbox"><svg id="power-chart" viewBox="0 0 1030 205" role="img" aria-label="Índice de poder de compra da bolsa em porcentagem"></svg></div><div class="mini-legend">100% = poder de compra em abril/2013. Dados mensais de abril a setembro/2026.</div></section>
- <details class="sources"><summary>Fontes utilizadas</summary>
-  <nav class="source-links" aria-label="Fontes oficiais">
-   <a href="https://www.gov.br/capes/pt-br/acesso-a-informacao/acoes-e-programas/bolsas/prestacao-de-contas/valores-de-bolsas" target="_blank" rel="noopener">Valores das bolsas — CAPES</a>
-   <a href="https://www.gov.br/capes/pt-br/assuntos/noticias/governo-vai-reajustar-a-partir-de-abril-valores-de-bolsas-de-pos-graduacao" target="_blank" rel="noopener">Reajuste de 2013 — CAPES</a>
-   <a href="https://www.gov.br/capes/pt-br/assuntos/noticias/capes-e-cnpq-aumentam-bolsas-de-pos-graduacao-em-40/" target="_blank" rel="noopener">Reajuste de 2023 — CAPES</a>
-   <a href="https://www.ibge.gov.br/indicadores/inflacao" target="_blank" rel="noopener">IPCA mensal — IBGE</a>
+  <nav class="page-nav" aria-label="Páginas do site">
+    <a href="?pagina=principal" data-page="principal" class="active" aria-current="page">Pós-graduação</a>
+    <a href="?pagina=outras" data-page="outras">Graduação e outras bolsas CAPES</a>
   </nav>
- </details>
+  <main>
+    <header>
+      <h1 id="page-heading">Quanto vale minha bolsa?</h1>
+      <p class="intro" id="page-intro">O que aconteceria se as bolsas de pesquisa tivessem acompanhado a inflação? Compare o poder de compra das bolsas em abril de 2013 e março de 2023, quando ocorreram os últimos reajustes, com setembro de 2026. Veja também a evolução histórica desde 2013.</p>
+    </header>
+    <section class="panel selector-panel" aria-label="Escolha da bolsa">
+      <div id="main-groups" class="selector-groups single-group">
+        <div class="selector-section">
+          <h2>Pós-graduação · CAPES e CNPq</h2>
+          <div class="options" role="group" aria-label="Bolsas de pós-graduação da CAPES e do CNPq">
+            <button class="option active" type="button" data-kind="mestrado" aria-pressed="true">Mestrado</button>
+            <button class="option" type="button" data-kind="doutorado" aria-pressed="false">Doutorado</button>
+            <button class="option" type="button" data-kind="posdoc" aria-pressed="false">Pós-Doutorado</button>
+          </div>
+          <p class="selector-detail" id="postgrad-detail">Valores nacionais de referência da CAPES e do CNPq. No pós-doutorado, são considerados os valores da CAPES e do Pós-Doutorado Júnior (PDJ) do CNPq; a modalidade Sênior (PDS) do CNPq tem outro valor.</p>
+        </div>
+      </div>
+      <div id="other-groups" class="selector-groups" hidden>
+        <div class="selector-section">
+          <h2>Graduação</h2>
+          <div class="options" role="group" aria-label="Bolsas de graduação">
+            <button class="option" type="button" data-kind="ic" aria-pressed="false">Iniciação Científica (CNPq)</button>
+            <button class="option" type="button" data-kind="pibid_id" aria-pressed="false">Iniciação à Docência (PIBID)</button>
+          </div>
+          <p class="selector-detail">Bolsas de Iniciação Científica do CNPq e de Iniciação à Docência do PIBID/CAPES.</p>
+        </div>
+        <div class="selector-section">
+          <h2>Outras bolsas CAPES</h2>
+          <div class="options" role="group" aria-label="Bolsas de supervisão e coordenação do PIBID">
+            <button class="option" type="button" data-kind="pibid_supervisor" aria-pressed="false">Supervisor</button>
+            <button class="option" type="button" data-kind="pibid_area" aria-pressed="false">Coordenador de Área</button>
+            <button class="option" type="button" data-kind="pibid_institucional" aria-pressed="false">Coordenador Institucional</button>
+          </div>
+          <p class="selector-detail">Bolsas para docentes envolvidos no PIBID.</p>
+        </div>
+      </div>
+    </section>
+    <section class="panel period-panel" aria-label="Período de referência">
+      <div>
+        <h2>Mês de referência</h2>
+        <div class="options" role="group" aria-label="Selecione o mês base da correção">
+          <button class="option active" type="button" data-period="2013-04" aria-pressed="true">Abril de 2013</button>
+          <button class="option" type="button" data-period="2023-03" aria-pressed="false">Março de 2023</button>
+        </div>
+      </div>
+      <p class="note" id="period-note">Abril de 2013 após o reajuste daquele ano; março de 2023 após o reajuste de fevereiro de 2023.</p>
+    </section>
+    <section class="stats" aria-label="Valores da bolsa">
+      <div class="stat nominal">
+        <div class="label" id="actual-heading">Bolsa em abril de 2013</div>
+        <strong id="actual-value" aria-live="polite">—</strong>
+        <span class="foot" id="actual-desc">Valor histórico nominal</span>
+      </div>
+      <div class="stat corrected">
+        <div class="label">Quanto valeria hoje com correção pelo IPCA</div>
+        <strong id="corrected-value" aria-live="polite">—</strong>
+        <span class="foot">Valor corrigido até set/2026</span>
+      </div>
+    </section>
+    <div class="plots">
+      <section class="panel" aria-labelledby="history-title">
+        <h2 class="section-title" id="history-title">O reajuste acompanha a inflação?</h2>
+        <p class="section-sub" id="history-desc">Evolução mensal de abr/2013 a set/2026. A linha azul registra o valor nominal da bolsa; a verde tracejada acompanha o valor que a bolsa teria caso fosse corrigida pelo IPCA.</p>
+        <div class="plotbox" id="main-plot"><svg id="line-chart" viewBox="0 0 680 340" role="img" aria-label="Valor mensal nominal e valor corrigido pela inflação"></svg><div class="tooltip" id="tooltip"></div></div>
+        <div class="legend"><span><i class="line-key"></i>Bolsa nominal</span><span><i class="line-key green"></i>Valor com correção (tracejado)</span></div>
+      </section>
+      <section class="panel" aria-labelledby="comparison-title">
+        <h2 class="section-title" id="comparison-title">Quanto deveria valer a bolsa hoje?</h2>
+        <p class="section-sub" id="comparison-description">Preservando o poder de compra de abril de 2013</p>
+        <p class="target-caption">Para ter hoje o <strong>mesmo poder de compra</strong> que tinha <strong id="comparison-base">em abril de 2013</strong>, a bolsa deveria ser:</p>
+        <span class="target-label">Valor necessário · set/2026</span>
+        <strong class="target-value" id="bar-corrected-label">—</strong>
+        <div class="goaltrack" id="goaltrack" role="img" aria-label="Comparação entre a bolsa atual e o valor corrigido"><div class="goal-filled" id="bar-actual"></div><div class="goal-missing" id="bar-missing"></div></div>
+        <div class="goal-legend"><span><i class="swatch"></i>Hoje: <b id="bar-actual-label">—</b></span><span><i class="swatch missing"></i>Falta: <b id="bar-gap-label">—</b></span></div>
+        <p class="insight" id="insight"></p>
+      </section>
+    </div>
+    <section class="panel power" aria-labelledby="power-title">
+      <h2 class="section-title" id="power-title">Poder de compra da bolsa</h2>
+      <p class="section-sub" id="power-description">Referência fixa: abril de 2013 (100%). Reajuste em fevereiro/2023.</p>
+      <div class="plotbox"><svg id="power-chart" viewBox="0 0 1030 240" role="img" aria-label="Poder de compra da bolsa desde abril de 2013, em porcentagem"></svg></div>
+      <p class="footnote">100% = poder de compra em abril/2013. Dados mensais de abr/2013 a set/2026. Os valores consideram as mensalidades de referência, não eventuais complementações institucionais.</p>
+    </section>
+    <details class="sources">
+      <summary>Fontes utilizadas</summary>
+      <nav class="source-links" aria-label="Links das fontes">
+        <a target="_blank" rel="noopener" href="https://www.gov.br/capes/pt-br/acesso-a-informacao/acoes-e-programas/bolsas/prestacao-de-contas/valores-de-bolsas">CAPES · Valores oficiais das bolsas</a>
+        <a target="_blank" rel="noopener" href="https://www.gov.br/capes/pt-br/assuntos/noticias/governo-vai-reajustar-a-partir-de-abril-valores-de-bolsas-de-pos-graduacao">CAPES · Reajuste de 2013</a>
+        <a target="_blank" rel="noopener" href="https://www.gov.br/capes/pt-br/acesso-a-informacao/transparencia-e-prestacao-de-contas/programas-projetos-e-acoes/fomento-a-formacao-de-professores-da-educacao-basica/programas-projetos-e-acoes/programas-projetos-e-acoes-2023">CAPES · Histórico do PIBID em 2023</a>
+        <a target="_blank" rel="noopener" href="https://www.gov.br/capes/pt-br/assuntos/noticias/pibid-tem-novo-prazo-de-submissao-de-propostas">CAPES · Valores do PIBID em 2012</a>
+        <a target="_blank" rel="noopener" href="https://www.gov.br/cnpq/pt-br/assuntos/noticias/cnpq-em-acao/governo-federal-anuncia-reajuste-de-bolsas-do-cnpq-e-da-capes">CNPq · Reajuste da IC</a>
+        <a target="_blank" rel="noopener" href="https://www.gov.br/cnpq/pt-br/acesso-a-informacao/bolsas-e-auxilios/copy_of_modalidades/tabela-de-valores-no-pais">CNPq · Tabela de bolsas (pós-graduação e IC)</a>
+        <a target="_blank" rel="noopener" href="https://memoria.cnpq.br/view/-/journal_content/56_INSTANCE_0oED/10157/971393">CNPq · Bolsas de 2013</a>
+        <a target="_blank" rel="noopener" href="https://www.gov.br/capes/pt-br/acesso-a-informacao/acoes-e-programas/educacao-basica/pibid/pibid">CAPES · PIBID (modalidades)</a>
+        <a target="_blank" rel="noopener" href="https://www.ibge.gov.br/indicadores/inflacao">IBGE · IPCA</a>
+      </nav>
+      <p>Os valores nacionais de mestrado e doutorado são iguais na CAPES e no CNPq nos períodos comparados. Para pós-doutorado, o valor apresentado corresponde ao praticado pela CAPES e ao Pós-Doutorado Júnior do CNPq, não à modalidade Sênior, cujo valor desde 2023 é de R$ 5.500. O reajuste de fevereiro de 2023 aparece no gráfico a partir desse mês; para a IC do CNPq, usa-se março de 2023. Os dados mensais do IPCA foram preservados do arquivo original.</p>
+    </details>
+  </main>
 </div>
 <script>
 'use strict';
-// IPCA mensal (%) extraído do arquivo fornecido para este site.
-// Referência no mês-base é um valor ao FIM do mês. A atualização começa no mês seguinte.
+// IPCA mensal (%) preservado do arquivo enviado.
 const ipca = {
   "2013-03": 0.47, "2013-04": 0.55, "2013-05": 0.37, "2013-06": 0.26, "2013-07": 0.03, "2013-08": 0.24,
   "2013-09": 0.35, "2013-10": 0.57, "2013-11": 0.54, "2013-12": 0.92, "2014-01": 0.55, "2014-02": 0.69,
@@ -147,123 +272,226 @@ const ipca = {
   "2026-03": 0.88, "2026-04": 0.67, "2026-05": 0.58, "2026-06": 0.16, "2026-07": 0.07, "2026-08": -0.32,
   "2026-09": 0.82
 };
+
+const months = Object.keys(ipca).sort();
+const latest = '2026-09';
+const shownMonths = months.filter(m => m >= '2013-04' && m <= latest);
 const monthNames = ['','janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
-const allMonths = Object.keys(ipca).sort();
-const latestMonth = allMonths[allMonths.length-1];
-const fmtMonth = ym => { const [y,m]=ym.split('-').map(Number); return `${monthNames[m][0].toUpperCase()}${monthNames[m].slice(1)} de ${y}`; };
-const periodLabels = allMonths.filter(month => month >= '2013-04');
-// Data de início de vigência do valor mensal (não data em que caiu na conta).
-const scholarshipHistory = {
- mestrado:[['2013-04',1500],['2023-02',2100]],
- doutorado:[['2013-04',2200],['2023-02',3100]]
+const formatMonth = m => { const [year,month] = m.split('-').map(Number); return `${monthNames[month][0].toUpperCase()}${monthNames[month].slice(1)} de ${year}`; };
+const money = v => v.toLocaleString('pt-BR',{style:'currency',currency:'BRL',maximumFractionDigits:0});
+const percent = v => v.toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1})+'%';
+
+// Datas indicam a competência em que passam a valer os valores, não a data do depósito.
+// IC do CNPq: vigência a partir de março/2023; CAPES: referência de fevereiro/2023.
+const scholarships = {
+  ic: {label:'Iniciação Científica (CNPq)', page:'outras', history:[['2013-04',400],['2023-03',700]]},
+  pibid_id: {label:'Iniciação à Docência (PIBID)', page:'outras', history:[['2013-04',400],['2023-02',700]]},
+  mestrado: {label:'Mestrado', page:'principal', history:[['2013-04',1500],['2023-02',2100]]},
+  doutorado: {label:'Doutorado', page:'principal', history:[['2013-04',2200],['2023-02',3100]]},
+  pibid_supervisor: {label:'Supervisor do PIBID', page:'outras', history:[['2013-04',765],['2023-02',1100]]},
+  pibid_area: {label:'Coordenador de Área do PIBID', page:'outras', history:[['2013-04',1400],['2023-02',2000]]},
+  pibid_institucional: {label:'Coordenador Institucional do PIBID', page:'outras', history:[['2013-04',1500],['2023-02',2100]]},
+  posdoc: {label:'Pós-Doutorado (CAPES/CNPq PDJ)', page:'principal', history:[['2013-04',4100],['2023-02',5200]]}
 };
-function nominalAt(kind,month){let value=null;for(const [since,amount] of scholarshipHistory[kind]) if(month>=since)value=amount;return value;}
-// Número-índice encadeado do IPCA (o mês inicial de normalização é março/2013; a comparação começa em abril/2013).
-const priceIndex = {'2013-03':1};
-for(let i=1;i<allMonths.length;i++){
- const ym=allMonths[i];priceIndex[ym]=priceIndex[allMonths[i-1]]*(1+ipca[ym]/100);
-}
-function ipcaFactor(from,to=latestMonth){if(!(from in priceIndex)||!(to in priceIndex)||from>to)throw Error('Período do IPCA inválido');return priceIndex[to]/priceIndex[from];}
-const data=periodLabels.map((month,i)=>{
- const [year,mo]=month.split('-').map(Number);
- return {month, year, label:year<2026?String(year):`${String(mo).padStart(2,'0')}/26`,full:fmtMonth(month),factor:priceIndex[month],mestrado:nominalAt('mestrado',month),doutorado:nominalAt('doutorado',month)};
-});
-const currentNominal={mestrado:nominalAt('mestrado',latestMonth),doutorado:nominalAt('doutorado',latestMonth)};
-const brl=n=>n.toLocaleString('pt-BR',{style:'currency',currency:'BRL',maximumFractionDigits:0});
-const pct=n=>n.toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1})+'%';
-const ns='http://www.w3.org/2000/svg';
-let kind='mestrado',idx=data.findIndex(d=>d.month==='2013-04');
-function el(tag,atts={},text){const e=document.createElementNS(ns,tag);for(const [k,v] of Object.entries(atts))e.setAttribute(k,v);if(text!==undefined)e.textContent=text;return e;}
+const nominalAt = (kind,month) => {
+  let amount = null;
+  for(const [start,value] of scholarships[kind].history) if(month >= start) amount=value;
+  return amount;
+};
+const price = {'2013-03':1};
+for(let i=1;i<months.length;i++) price[months[i]]=price[months[i-1]]*(1+ipca[months[i]]/100);
+const factor=(from,to=latest)=>price[to]/price[from];
+const series=shownMonths.map(m=>({month:m,full:formatMonth(m)}));
 const tickMonths=['2013-04','2015-01','2017-01','2019-01','2021-01','2023-01','2025-01','2026-09'];
-function drawXAxis(svg,x,H){
- tickMonths.forEach((month,i)=>{
-  const pos=data.findIndex(d=>d.month===month);
-  const label=i===tickMonths.length-1?'set/2026':month.slice(0,4);
-  svg.append(el('text',{x:x(pos),y:H-9,'text-anchor':i===0?'start':i===tickMonths.length-1?'end':'middle','font-size':'12',fill:'#a1b6bd'},label));
- });
+const NS='http://www.w3.org/2000/svg';
+const svgElement=(tag,attrs={},label) => {
+  const node=document.createElementNS(NS,tag);
+  for(const [key,value] of Object.entries(attrs)) node.setAttribute(key,String(value));
+  if(label!==undefined) node.textContent=label;
+  return node;
+};
+const $=id=>document.getElementById(id);
+let kind='mestrado', base='2013-04', page='principal';
+const themeVars=()=>{
+  const s=getComputedStyle(document.documentElement);
+  return Object.fromEntries(['--text','--muted','--blue','--green','--orange','--grid','--surface'].map(v=>[v,s.getPropertyValue(v).trim()]));
+};
+function applyTheme(next){
+  document.documentElement.dataset.theme=next;
+  $('theme-icon').textContent=next==='light'?'☾':'☀';
+  $('theme-label').textContent=next==='light'?'Modo escuro':'Modo claro';
+  $('theme-toggle').setAttribute('aria-pressed',String(next==='dark'));
+  document.querySelector('meta[name="theme-color"]').content=next==='light'?'#f7f8f9':'#12181e';
+  try { localStorage.setItem('bolsas-theme',next); } catch(e) {}
+  if(document.readyState!=='loading') render();
 }
-function paths(svg,W,H,left,right,top,bottom,min,max,nom,cor,selected=idx){
- svg.replaceChildren();const x=i=>left+(W-left-right)*i/(data.length-1);const y=v=>H-bottom-(v-min)/(max-min)*(H-top-bottom);
- for(let i=0;i<5;i++){
-  const val=min+(max-min)*i/4,p=y(val);
-  svg.append(el('line',{x1:left,y1:p,x2:W-right,y2:p,stroke:'#39515a','stroke-dasharray':'3 6','stroke-width':'1'}));
-  svg.append(el('text',{x:left-9,y:p+4,'font-size':'12','text-anchor':'end',fill:'#a1b6bd'},Math.round(val).toLocaleString('pt-BR')));
- }
- drawXAxis(svg,x,H);
- const line=arr=>arr.map((v,i)=>(i?'L':'M')+x(i).toFixed(1)+' '+y(v).toFixed(1)).join(' ');
- svg.append(el('path',{d:line(cor),fill:'none',stroke:'#6fe3b9','stroke-width':'3','stroke-dasharray':'8 6','stroke-linejoin':'round'}));
- const stepped=nom.map((v,i)=>i===0?'M'+x(i).toFixed(1)+' '+y(v).toFixed(1):'H'+x(i).toFixed(1)+' V'+y(v).toFixed(1)).join(' ');
- svg.append(el('path',{d:stepped,fill:'none',stroke:'#7ec4f5','stroke-width':'3','stroke-linejoin':'round'}));
- svg.append(el('line',{x1:x(selected),y1:top-3,x2:x(selected),y2:H-bottom,stroke:'#c6d3d8','stroke-dasharray':'4 4','stroke-width':'1',opacity:'.65'}));
- [[nom[selected],'#7ec4f5'],[cor[selected],'#6fe3b9']].forEach(([val,color])=>svg.append(el('circle',{cx:x(selected),cy:y(val),r:'6',fill:color,stroke:'#0b1e27','stroke-width':'2'})));
- return {x,y};
+function drawTicks(svg,x,H,colors){
+  tickMonths.forEach((m,i)=>{
+    const ix=shownMonths.indexOf(m);
+    const label=i===tickMonths.length-1?'set/2026':m.slice(0,4);
+    const alignment=i===0?'start':i===tickMonths.length-1?'end':'middle';
+    svg.append(svgElement('text',{x:x(ix),y:H-8,'text-anchor':alignment,'font-size':12,fill:colors['--muted']},label));
+  });
 }
-function renderLine(){
- const svg=document.getElementById('line-chart'),W=680,H=340,nominal=data.map(d=>d[kind]);
- const base=nominalAt(kind,'2013-04'), corrected=data.map(d=>base*ipcaFactor('2013-04',d.month));
- const low=0;
- const max=Math.ceil((Math.max(...nominal,...corrected)+180)/500)*500;
- const xy=paths(svg,W,H,55,20,15,34,low,max,nominal,corrected);
- const tooltip=document.getElementById('tooltip'),plot=document.getElementById('main-plot');
- data.forEach((d,i)=>{
-  const point=el('rect',{x:xy.x(i)-Math.max(6,Math.min(13,250/data.length)),y:15,width:Math.max(12,Math.min(26,500/data.length)),height:290,fill:'transparent','tabindex':'0','aria-label':d.full+', bolsa nominal '+brl(nominal[i])+', bolsa de abril/2013 corrigida '+brl(corrected[i])});
-  svg.append(point);
-  function show(){tooltip.innerHTML=`<strong>${d.full}</strong><div class="blue">Bolsa do mês: ${brl(nominal[i])}</div><div class="green">Abr/2013 corrigido: ${brl(corrected[i])}</div>`;tooltip.style.display='block';const rect=plot.getBoundingClientRect();const xx=(xy.x(i)/W)*rect.width;tooltip.style.left=Math.min(Math.max(0,xx-70),Math.max(0,rect.width-165))+'px';tooltip.style.top='18px';}
-  point.addEventListener('mouseenter',show);point.addEventListener('focus',show);
-  point.addEventListener('mouseleave',()=>tooltip.style.display='none');point.addEventListener('blur',()=>tooltip.style.display='none');
- });
+function drawLine(){
+  const svg=$('line-chart'),W=680,H=340,left=58,right=18,top=14,bottom=39;
+  const colors=themeVars();
+  const current=series.map(d=>nominalAt(kind,d.month));
+  const corrected=series.map(d=>d.month>=base?nominalAt(kind,base)*factor(base,d.month):null);
+  const ceiling=Math.ceil(Math.max(...current,...corrected.filter(v=>v!==null))*1.12/500)*500;
+  const x=i=>left+(W-left-right)*i/(series.length-1);
+  const y=v=>H-bottom-v/ceiling*(H-top-bottom);
+  const selected=shownMonths.indexOf(base);
+  svg.replaceChildren();
+  for(let i=0;i<=4;i++){
+    const value=ceiling*i/4, yy=y(value);
+    svg.append(svgElement('line',{x1:left,y1:yy,x2:W-right,y2:yy,stroke:colors['--grid'],'stroke-width':1,'stroke-dasharray':'3 5'}));
+    svg.append(svgElement('text',{x:left-9,y:yy+4,'text-anchor':'end','font-size':12,fill:colors['--muted']},Math.round(value).toLocaleString('pt-BR')));
+  }
+  drawTicks(svg,x,H,colors);
+  // A comparação IPCA começa no mês-base. A linha nominal usa degraus com salto vertical no reajuste.
+  const valid=corrected.map((value,i)=>({value,i})).filter(p=>p.value!==null);
+  const cPath=valid.map((p,j)=>`${j?'L':'M'}${x(p.i).toFixed(2)} ${y(p.value).toFixed(2)}`).join(' ');
+  const nPath=current.map((value,i)=>i===0?`M${x(i).toFixed(2)} ${y(value).toFixed(2)}`:`H${x(i).toFixed(2)} V${y(value).toFixed(2)}`).join(' ');
+  svg.append(svgElement('path',{d:cPath,fill:'none',stroke:colors['--green'],'stroke-width':2.8,'stroke-dasharray':'7 5','stroke-linejoin':'round'}));
+  svg.append(svgElement('path',{d:nPath,fill:'none',stroke:colors['--blue'],'stroke-width':3,'stroke-linejoin':'round'}));
+  svg.append(svgElement('line',{x1:x(selected),x2:x(selected),y1:top,y2:H-bottom,stroke:colors['--muted'],'stroke-width':1,'stroke-dasharray':'3 5',opacity:.75}));
+  for(const [value,color] of [[current[selected],colors['--blue']],[corrected[selected],colors['--green']]]){
+    svg.append(svgElement('circle',{cx:x(selected),cy:y(value),r:5,fill:color,stroke:colors['--surface'],'stroke-width':2}));
+  }
+  const tooltip=$('tooltip');
+  tooltip.style.display='none';
+  const box=$('main-plot');
+  series.forEach((d,i)=>{
+    const v=current[i],c=corrected[i];
+    const hit=svgElement('rect',{x:x(i)-3.5,y:top,width:7,height:H-top-bottom,fill:'transparent','tabindex':0,
+      'aria-label':`${d.full}: bolsa nominal ${money(v)}; corrigida ${c===null?'não se aplica':money(c)}`});
+    const show=()=>{
+      tooltip.replaceChildren();
+      const strong=document.createElement('strong');strong.textContent=d.full;tooltip.append(strong);
+      const a=document.createElement('div');a.className='blue';a.textContent='Nominal: '+money(v);tooltip.append(a);
+      const b=document.createElement('div');b.className='green';b.textContent=c===null?'IPCA: antes da referência':'IPCA: '+money(c);tooltip.append(b);
+      tooltip.style.display='block';
+      const width=box.getBoundingClientRect().width, px=x(i)*width/W;
+      tooltip.style.left=Math.max(0,Math.min(px-75,width-190))+'px';tooltip.style.top='18px';
+    };
+    hit.addEventListener('mouseenter',show);hit.addEventListener('focus',show);
+    hit.addEventListener('mouseleave',()=>tooltip.style.display='none');hit.addEventListener('blur',()=>tooltip.style.display='none');
+    svg.append(hit);
+  });
 }
-function renderPower(){
- const svg=document.getElementById('power-chart'),W=1030,H=205,left=45,right=22,top=13,bottom=30;
- const base=nominalAt(kind,'2013-04');
- const series=data.map(d=>100*d[kind]/(base*ipcaFactor('2013-04',d.month)));
- const min=0,max=Math.ceil((Math.max(100,...series)+7)/20)*20;
- const x=i=>left+(W-left-right)*i/(data.length-1),y=v=>H-bottom-(v-min)/(max-min)*(H-top-bottom);
- svg.replaceChildren();
- for(let v=0;v<=max;v+=20){
-  svg.append(el('line',{x1:left,y1:y(v),x2:W-right,y2:y(v),stroke:v===100?'#6fe3b9':'#39515a','stroke-width':'1','stroke-dasharray':'4 5',opacity:v===100?'.7':'1'}));
-  svg.append(el('text',{x:left-9,y:y(v)+4,'text-anchor':'end','font-size':'12',fill:'#a1b6bd'},v+'%'));
- }
- svg.append(el('path',{d:series.map((v,i)=>i===0?'M'+x(i).toFixed(1)+' '+y(v).toFixed(1):(data[i][kind]!==data[i-1][kind]?'L'+x(i).toFixed(1)+' '+y(100*data[i-1][kind]/(base*ipcaFactor('2013-04',data[i].month))).toFixed(1)+' L'+x(i).toFixed(1)+' '+y(v).toFixed(1):'L'+x(i).toFixed(1)+' '+y(v).toFixed(1))).join(' '),stroke:'#ffb78b','stroke-width':'3',fill:'none','stroke-linejoin':'round'}));
- drawXAxis(svg,x,H);
- svg.append(el('circle',{cx:x(idx),cy:y(series[idx]),r:6,stroke:'#0b1e27','stroke-width':2,fill:'#ffb78b'}));
- svg.append(el('text',{x:Math.max(left+29,Math.min(W-60,x(idx))),y:Math.max(12,y(series[idx])-13),'text-anchor':'middle','font-size':'13','font-weight':'bold',fill:'#ffb78b'},pct(series[idx])));
+function drawPower(){
+  const svg=$('power-chart'),W=1030,H=240,left=48,right=24,top=24,bottom=37;
+  const colors=themeVars(),baseline=nominalAt(kind,'2013-04');
+  const values=series.map(d=>100*nominalAt(kind,d.month)/(baseline*factor('2013-04',d.month)));
+  const max=Math.max(120,Math.ceil(Math.max(...values,100)*1.06/20)*20);
+  const x=i=>left+(W-left-right)*i/(series.length-1),y=v=>H-bottom-v/max*(H-top-bottom);
+  svg.replaceChildren();
+  for(let v=0;v<=max;v+=20){
+    svg.append(svgElement('line',{x1:left,x2:W-right,y1:y(v),y2:y(v),stroke:v===100?colors['--green']:colors['--grid'],'stroke-width':1,'stroke-dasharray':v===100?'5 4':'3 5'}));
+    svg.append(svgElement('text',{x:left-9,y:y(v)+4,'text-anchor':'end','font-size':12,fill:colors['--muted']},v+'%'));
+  }
+  const pieces=[];
+  values.forEach((v,i)=>{
+    if(i===0){pieces.push(`M${x(i).toFixed(2)} ${y(v).toFixed(2)}`);return;}
+    const prev=nominalAt(kind,series[i-1].month),now=nominalAt(kind,series[i].month);
+    if(now!==prev){
+      const before=100*prev/(baseline*factor('2013-04',series[i].month));
+      pieces.push(`L${x(i).toFixed(2)} ${y(before).toFixed(2)}`);
+    }
+    pieces.push(`L${x(i).toFixed(2)} ${y(v).toFixed(2)}`);
+  });
+  svg.append(svgElement('path',{d:pieces.join(' '),fill:'none',stroke:colors['--orange'],'stroke-width':3,'stroke-linejoin':'round'}));
+  drawTicks(svg,x,H,colors);
+  const selected=shownMonths.indexOf(base);
+  svg.append(svgElement('circle',{cx:x(selected),cy:y(values[selected]),r:5,fill:colors['--orange'],stroke:colors['--surface'],'stroke-width':2}));
+  svg.append(svgElement('text',{x:Math.max(left+40,Math.min(W-right-40,x(selected))),y:Math.max(top-5,y(values[selected])-12),'text-anchor':'middle','font-size':13,'font-weight':700,fill:colors['--orange']},percent(values[selected])));
 }
 function render(){
- const d=data[idx],historical=d[kind],now=currentNominal[kind],corrected=historical*ipcaFactor(d.month);
- document.getElementById('actual-heading').textContent='Bolsa em '+d.full.toLowerCase();
- const loss=Math.max(0,corrected-now),power=100*now/corrected;
- document.getElementById('actual-value').textContent=brl(historical);
- document.getElementById('actual-desc').textContent='Valor nominal em '+d.month.slice(5)+'/'+d.year;
- document.getElementById('corrected-value').textContent=brl(corrected);
- document.getElementById('comparison-description').textContent='Com o IPCA acumulado até setembro de 2026';
- document.getElementById('comparison-base').textContent='em '+d.full.toLowerCase();
- document.getElementById('bar-actual-label').textContent=brl(now);
- document.getElementById('bar-corrected-label').textContent=brl(corrected);
- document.getElementById('bar-gap-label').textContent=brl(loss);
- const filled=Math.max(0,Math.min(100,100*now/corrected));
- document.getElementById('bar-actual').style.width=filled+'%';
- document.getElementById('bar-missing').style.display=loss>0.005?'block':'none';
- document.getElementById('goaltrack').setAttribute('aria-label',`Bolsa vigente ${brl(now)}, valor corrigido ${brl(corrected)}, diferença ${brl(loss)}`);
- document.getElementById('insight').innerHTML=loss>0.005
-  ?`A bolsa atual preserva <strong>${pct(power)}</strong> do poder de compra que a bolsa tinha em ${d.full.toLowerCase()}. Seriam necessários <strong>mais ${brl(loss)} por mês</strong> para igualá-lo.`
-  :`A bolsa atual já iguala ou supera o poder de compra de ${d.full.toLowerCase()} (${pct(power)} da referência).`;
- renderLine();renderPower();
+  const item=scholarships[kind], historical=nominalAt(kind,base),actual=nominalAt(kind,latest);
+  const adjusted=historical*factor(base,latest),gap=Math.max(0,adjusted-actual),power=100*actual/adjusted;
+  document.querySelectorAll('[data-kind]').forEach(b=>{
+    const selected=b.dataset.kind===kind;b.classList.toggle('active',selected);b.setAttribute('aria-pressed',String(selected));
+  });
+  document.querySelectorAll('[data-period]').forEach(b=>{
+    const selected=b.dataset.period===base;b.classList.toggle('active',selected);b.setAttribute('aria-pressed',String(selected));
+  });
+  $('actual-heading').textContent=`${item.label} em ${formatMonth(base).toLowerCase()}`;
+  $('actual-value').textContent=money(historical);
+  $('actual-desc').textContent='Valor histórico nominal';
+  $('comparison-description').textContent='Preservando o poder de compra de '+formatMonth(base).toLowerCase();
+  $('corrected-value').textContent=money(adjusted);
+  $('comparison-base').textContent='em '+formatMonth(base).toLowerCase();
+  $('bar-corrected-label').textContent=money(adjusted);
+  $('bar-actual-label').textContent=money(actual);
+  $('bar-gap-label').textContent=money(gap);
+  $('bar-actual').style.width=Math.min(100,power)+'%';
+  $('bar-missing').hidden=gap<=.005;
+  $('goaltrack').setAttribute('aria-label',`Valor atual ${money(actual)}; corrigido ${money(adjusted)}; diferença ${money(gap)}`);
+  const insight=$('insight');insight.replaceChildren();
+  const makeBold=text=>{const el=document.createElement('strong');el.textContent=text;return el;};
+  insight.replaceChildren();
+  if(gap>.005) insight.append('A bolsa atual preserva ',makeBold(percent(power)),' do poder de compra que a bolsa tinha em '+formatMonth(base).toLowerCase()+'. Seriam necessários ',makeBold('mais '+money(gap)+' por mês'),' para igualá-lo.');
+  else insight.append('A bolsa atual já iguala ou supera o poder de compra de '+formatMonth(base).toLowerCase()+' (',makeBold(percent(power)),' da referência).');
+  $('history-desc').textContent=`Evolução mensal de abr/2013 a set/2026 para ${item.label.toLowerCase()}. A linha azul registra o valor nominal da bolsa, com saltos nos reajustes; a verde tracejada acompanha o valor que a bolsa teria caso fosse corrigida pelo IPCA a partir de ${formatMonth(base).toLowerCase()}.`;
+  $('power-description').textContent=`Referência fixa: abril de 2013 (100%). Reajuste em ${item.history[1][0]==='2023-03'?'março':'fevereiro'}/2023.`;
+  $('period-note').textContent=kind==='ic'
+    ? 'Abril de 2013 considera o valor vigente naquele mês; março de 2023 já inclui o reajuste da Iniciação Científica do CNPq.'
+    : page==='principal'
+      ? 'Abril de 2013 após o reajuste daquele ano; março de 2023 após o reajuste de fevereiro de 2023.'
+      : 'Abril de 2013 considera o valor vigente naquele mês; março de 2023 já inclui o reajuste de fevereiro de 2023.';
+  $('line-chart').setAttribute('aria-label',`Histórico da bolsa de ${item.label}, com referência em ${formatMonth(base)}`);
+  drawLine();drawPower();
 }
-document.querySelectorAll('[data-period]').forEach(b=>b.addEventListener('click',()=>{
- idx=data.findIndex(d=>d.month===b.dataset.period);
- document.querySelectorAll('[data-period]').forEach(x=>{
-  x.classList.toggle('active',x===b);
-  x.setAttribute('aria-pressed',String(x===b));
- });
- render();
-}));
-document.querySelectorAll('[data-kind]').forEach(b=>b.addEventListener('click',()=>{
- kind=b.dataset.kind;
- document.querySelectorAll('[data-kind]').forEach(x=>{x.classList.toggle('active',x===b);x.setAttribute('aria-pressed',String(x===b));});
- render();
-}));
-render();
+const pageContent = {
+  principal: {
+    heading: 'Quanto vale minha bolsa?',
+    intro: 'O que aconteceria se as bolsas de pós-graduação da CAPES e do CNPq tivessem acompanhado a inflação? Compare o poder de compra das bolsas de mestrado, doutorado e pós-doutorado em abril de 2013 e março de 2023, quando ocorreram os últimos reajustes, com setembro de 2026. Veja também a evolução histórica desde 2013.',
+    defaultKind: 'mestrado'
+  },
+  outras: {
+    heading: 'Graduação e outras bolsas CAPES',
+    intro: 'O que aconteceria se as bolsas de graduação, supervisão e coordenação do PIBID tivessem acompanhado a inflação? Compare o poder de compra da Iniciação Científica (CNPq), da Iniciação à Docência e das bolsas de supervisão e coordenação do PIBID/CAPES em abril de 2013 e março de 2023, após os reajustes, com setembro de 2026. Veja também a evolução histórica desde 2013.',
+    defaultKind: 'ic'
+  }
+};
+function renderPage(){
+  ['principal','outras'].forEach(p=>$(p==='principal'?'main-groups':'other-groups').hidden=p!==page);
+  $('page-heading').textContent=pageContent[page].heading;
+  $('page-intro').textContent=pageContent[page].intro;
+  document.querySelectorAll('[data-page]').forEach(a=>{
+    const active=a.dataset.page===page;
+    a.classList.toggle('active',active);
+    if(active)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');
+  });
+  if(scholarships[kind].page!==page)kind=pageContent[page].defaultKind;
+  render();
+}
+function setPage(next,push){
+  // Compatibilidade com links antigos da página de graduação.
+  if(next==='graduacao')next='outras';
+  if(!pageContent[next])next='principal';
+  page=next;
+  if(push){
+    const url=new URL(window.location.href);
+    if(page==='principal')url.searchParams.delete('pagina');
+    else url.searchParams.set('pagina',page);
+    history.pushState({page},'',url);
+  }
+  renderPage();
+}
+function init(){
+  try { applyTheme(localStorage.getItem('bolsas-theme')==='dark'?'dark':'light'); }
+  catch(e){ applyTheme('light'); }
+  $('theme-toggle').addEventListener('click',()=>applyTheme(document.documentElement.dataset.theme==='light'?'dark':'light'));
+  document.querySelectorAll('[data-kind]').forEach(button=>button.addEventListener('click',()=>{kind=button.dataset.kind;render();}));
+  document.querySelectorAll('[data-period]').forEach(button=>button.addEventListener('click',()=>{base=button.dataset.period;render();}));
+  document.querySelectorAll('[data-page]').forEach(link=>link.addEventListener('click',e=>{e.preventDefault();setPage(link.dataset.page,true);}));
+  document.querySelector('.site-name').addEventListener('click',e=>{e.preventDefault();setPage('principal',true);});
+  window.addEventListener('popstate',()=>setPage(new URL(window.location.href).searchParams.get('pagina')||'principal',false));
+  setPage(new URL(window.location.href).searchParams.get('pagina')||'principal',false);
+}
+init();
 </script>
 </body>
 </html>
