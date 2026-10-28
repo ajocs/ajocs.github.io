@@ -89,12 +89,12 @@
   </div>
  </section>
  <section class="stats" aria-label="Indicadores">
-  <div class="stat actual"><div class="name" id="actual-heading">Bolsa em março de 2023</div><strong id="actual-value">—</strong><small id="actual-desc">Valor histórico nominal</small></div>
+  <div class="stat actual"><div class="name" id="actual-heading">Bolsa em abril de 2013</div><strong id="actual-value">—</strong><small id="actual-desc">Valor histórico nominal</small></div>
   <div class="stat corrected"><div class="name">Quanto deveria valer hoje</div><strong id="corrected-value">—</strong><small>Valor corrigido até set/2026</small></div>
  </section>
  <div class="plots">
   <section class="card"><h2 class="sect-title">O reajuste acompanha a inflação?</h2><p class="sect-sub">Evolução mensal de abr/2013 a set/2026. A linha azul registra o reajuste em um salto; a verde tracejada acompanha o IPCA.</p><div class="plotbox" id="main-plot"><svg id="line-chart" viewBox="0 0 680 340" role="img" aria-label="Histórico da bolsa nominal em comparação ao valor corrigido pelo IPCA"></svg><div class="tooltip" id="tooltip"></div></div><div class="legend"><span><i class="dot"></i>Bolsa nominal</span><span><i class="dot green"></i>Valor com correção (tracejado)</span></div></section>
-  <section class="card"><h2 class="sect-title">Quanto deveria valer a bolsa hoje?</h2><p class="sect-sub" id="comparison-description">Preservando o poder de compra de março de 2023</p>
+  <section class="card"><h2 class="sect-title">Quanto deveria valer a bolsa hoje?</h2><p class="sect-sub" id="comparison-description">Preservando o poder de compra de abril de 2013</p>
    <div class="comparison" aria-label="Comparação da bolsa atual com o valor corrigido">
     <p class="target-caption">Para ter hoje o <strong>mesmo poder de compra</strong> que tinha <strong id="comparison-base">em abril de 2013</strong>, a bolsa deveria ser:</p>
     <div class="target-header"><div><small>Valor necessário · set/2026</small><strong id="bar-corrected-label">—</strong></div></div>
@@ -232,12 +232,10 @@ function renderPower(){
 function render(){
  const d=data[idx],historical=d[kind],now=currentNominal[kind],corrected=historical*ipcaFactor(d.month);
  document.getElementById('actual-heading').textContent='Bolsa em '+d.full.toLowerCase();
- const loss=Math.max(0,corrected-now),extra=Math.max(0,now-corrected),power=100*now/corrected;
+ const loss=Math.max(0,corrected-now),power=100*now/corrected;
  document.getElementById('actual-value').textContent=brl(historical);
  document.getElementById('actual-desc').textContent='Valor nominal em '+d.month.slice(5)+'/'+d.year;
  document.getElementById('corrected-value').textContent=brl(corrected);
- document.getElementById('loss-value').textContent=brl(loss);
- document.getElementById('loss-desc').textContent=extra>0?'Bolsa supera a referência em '+brl(extra):'Comparação com a bolsa vigente: '+brl(now);
  document.getElementById('comparison-description').textContent='Com o IPCA acumulado até setembro de 2026';
  document.getElementById('comparison-base').textContent='em '+d.full.toLowerCase();
  document.getElementById('bar-actual-label').textContent=brl(now);
