@@ -45,9 +45,19 @@
     .comparison{margin:23px 0 7px}
     .barlabel{display:flex;justify-content:space-between;gap:10px;font-size:13px;margin-bottom:7px}
     .barlabel span{color:var(--muted)}
-    .bartrack{height:13px;background:#243844;overflow:hidden;border-radius:100px;margin-bottom:20px}
-    .bar{height:100%;border-radius:100px;background:var(--actual);width:0;transition:width .24s}
-    .bar.green{background:var(--corrected)}
+    .target-caption{font-size:13px;color:var(--muted);line-height:1.5;margin:0 0 17px}
+    .target-caption strong{color:var(--text)}
+    .target-header{display:flex;align-items:flex-end;justify-content:space-between;gap:8px;margin:0 0 12px}
+    .target-header small{font-size:12px;color:var(--muted);display:block;margin-bottom:3px}
+    .target-header strong{font-size:clamp(24px,2.6vw,31px);letter-spacing:-.04em;line-height:1.1;color:var(--corrected);font-variant-numeric:tabular-nums}
+    .goaltrack{width:100%;height:20px;overflow:hidden;display:flex;background:#243844;border-radius:999px;border:1px solid #43616b;margin-bottom:12px}
+    .goal-filled{height:100%;flex:0 0 auto;min-width:0;background:var(--actual);transition:width .22s}
+    .goal-missing{height:100%;flex:1;min-width:0;border-left:2px dashed #a0f7dd;background:repeating-linear-gradient(115deg,rgba(111,227,185,.23) 0 9px,rgba(111,227,185,.035) 9px 17px)}
+    .goal-legend{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;margin-bottom:16px;font-size:12px;color:var(--muted)}
+    .goal-legend b{color:var(--text)}
+    .goal-key{display:inline-flex;align-items:center;gap:6px}
+    .goal-swatch{display:inline-block;width:13px;height:9px;border-radius:2px;background:var(--actual)}
+    .goal-swatch.gap{background:repeating-linear-gradient(115deg,rgba(111,227,185,.6) 0 4px,transparent 4px 7px);border:1px dashed var(--corrected)}
     .insight{color:var(--muted);font-size:13px;padding:14px;border-radius:12px;background:var(--pane2);border:1px solid var(--edge)}
     .insight strong{color:var(--text)}
     .power{margin-top:16px}
@@ -63,40 +73,103 @@
 </head>
 <body>
 <div class="wrap">
- <header><div><div class="kicker">Bolsas de pesquisa · Brasil</div><h1>Quanto vale<br>minha bolsa?</h1><p class="intro">O que aconteceria se as bolsas de pesquisa tivessem acompanhado a inflação? Explore os valores oficiais, a defasagem e o poder de compra desde dezembro de 2013.</p></div><span class="tag">Protótipo · dados até set/2026</span></header>
+ <header><div><div class="kicker">Bolsas de pesquisa · Brasil</div><h1>Quanto vale<br>minha bolsa?</h1><p class="intro">O que aconteceria se as bolsas de pesquisa tivessem acompanhado a inflação? Escolha um mês de referência e descubra quanto aquela bolsa precisaria valer em setembro de 2026.</p></div><span class="tag">IPCA mensal · até set/2026</span></header>
  <section class="card controls" aria-label="Filtros">
   <div><div class="control-title">Modalidade CAPES</div><div class="tabs"><button class="active" data-kind="mestrado" aria-pressed="true">Mestrado</button><button data-kind="doutorado" aria-pressed="false">Doutorado</button></div></div>
-  <div class="rangebox"><div class="rangehead"><span class="control-title">Ano de comparação</span><span class="year" id="year-label">Setembro de 2026</span></div><input type="range" id="range" aria-label="Ano de comparação" min="0" max="13" step="1" value="13" /></div>
+  <div class="rangebox"><div class="rangehead"><span class="control-title">Mês de referência</span><span class="year" id="year-label">Abril de 2013</span></div><input type="range" id="range" aria-label="Mês de referência" min="0" max="19" step="1" value="0" /></div>
  </section>
  <section class="stats" aria-label="Indicadores">
-  <div class="stat actual"><div class="name">Valor da bolsa no período</div><strong id="actual-value">—</strong><small>Valor nominal pago</small></div>
-  <div class="stat corrected"><div class="name">Valor corrigido pelo IPCA</div><strong id="corrected-value">—</strong><small>Preservando o valor de dez/2013</small></div>
-  <div class="stat loss"><div class="name">Defasagem mensal</div><strong id="loss-value">—</strong><small id="loss-desc">—</small></div>
+  <div class="stat actual"><div class="name">Bolsa no mês escolhido</div><strong id="actual-value">—</strong><small id="actual-desc">Valor histórico nominal</small></div>
+  <div class="stat corrected"><div class="name">Quanto deveria valer hoje</div><strong id="corrected-value">—</strong><small>Valor corrigido até set/2026</small></div>
+  <div class="stat loss"><div class="name">Diferença para a bolsa atual</div><strong id="loss-value">—</strong><small id="loss-desc">—</small></div>
  </section>
  <div class="plots">
-  <section class="card"><h2 class="sect-title">O reajuste acompanha a inflação?</h2><p class="sect-sub">Valores mensais em reais; cada ponto representa o fim do período</p><div class="plotbox" id="main-plot"><svg id="line-chart" viewBox="0 0 680 340" role="img" aria-label="Histórico da bolsa nominal em comparação ao valor corrigido pelo IPCA"></svg><div class="tooltip" id="tooltip"></div></div><div class="legend"><span><i class="dot"></i>Bolsa nominal</span><span><i class="dot green"></i>Valor com correção</span></div></section>
-  <section class="card"><h2 class="sect-title">Quanto falta para alcançar?</h2><p class="sect-sub" id="comparison-description">Comparação no período selecionado</p><div class="comparison"><div class="barlabel"><span>Bolsa nominal</span><b id="bar-actual-label">—</b></div><div class="bartrack"><div id="bar-actual" class="bar"></div></div><div class="barlabel"><span>Valor corrigido</span><b id="bar-corrected-label">—</b></div><div class="bartrack"><div id="bar-corrected" class="bar green"></div></div></div><div class="insight" id="insight"></div></section>
+  <section class="card"><h2 class="sect-title">O reajuste acompanha a inflação?</h2><p class="sect-sub">Abril de 2013; março de cada ano de 2014 a 2026; e todos os meses a partir de abril/2026. Linha verde: bolsa de abril/2013 corrigida pelo IPCA.</p><div class="plotbox" id="main-plot"><svg id="line-chart" viewBox="0 0 680 340" role="img" aria-label="Histórico da bolsa nominal em comparação ao valor corrigido pelo IPCA"></svg><div class="tooltip" id="tooltip"></div></div><div class="legend"><span><i class="dot"></i>Bolsa nominal</span><span><i class="dot green"></i>Valor com correção</span></div></section>
+  <section class="card"><h2 class="sect-title">Quanto deveria valer a bolsa hoje?</h2><p class="sect-sub" id="comparison-description">Preservando o poder de compra no mês escolhido</p>
+   <div class="comparison" aria-label="Comparação da bolsa atual com o valor corrigido">
+    <p class="target-caption">Para ter hoje o <strong>mesmo poder de compra</strong> que tinha <strong id="comparison-base">em abril de 2013</strong>, a bolsa deveria ser:</p>
+    <div class="target-header"><div><small>Valor necessário · set/2026</small><strong id="bar-corrected-label">—</strong></div></div>
+    <div class="goaltrack" id="goaltrack" role="img" aria-label="Barra de proporção entre valor da bolsa atual e valor necessário corrigido pela inflação"><div id="bar-actual" class="goal-filled"></div><div id="bar-missing" class="goal-missing"></div></div>
+    <div class="goal-legend"><span class="goal-key"><i class="goal-swatch"></i> Hoje: <b id="bar-actual-label">—</b></span><span class="goal-key"><i class="goal-swatch gap"></i> Falta: <b id="bar-gap-label">—</b></span></div>
+   </div><div class="insight" id="insight"></div>
+  </section>
  </div>
- <section class="card power"><h2 class="sect-title">Poder de compra da bolsa</h2><p class="sect-sub">Em relação a dezembro de 2013 (100%). O reajuste de 2023 recupera parte do valor real.</p><div class="plotbox"><svg id="power-chart" viewBox="0 0 1030 205" role="img" aria-label="Índice de poder de compra da bolsa em porcentagem"></svg></div><div class="mini-legend">100% = poder de compra integral de dezembro de 2013. O último ponto é setembro de 2026.</div></section>
- <footer class="sources"><strong>Fontes e metodologia</strong><p>Valores das bolsas: <a href="https://www.gov.br/capes/pt-br/acesso-a-informacao/acoes-e-programas/bolsas/prestacao-de-contas/valores-de-bolsas" target="_blank" rel="noopener">CAPES</a> e <a href="https://www.gov.br/capes/pt-br/centrais-de-conteudo/documentos/19032026_PNPG_20252029_FINALV4.pdf" target="_blank" rel="noopener">Plano Nacional de Pós-Graduação 2025–2029</a>. IPCA: <a href="https://www.ibge.gov.br/estatisticas/economicas/precos-e-custos/9256-indice-nacional-de-precos-ao-consumidoramplo.html?edicao=20932&t=series-historicas" target="_blank" rel="noopener">série histórica IBGE</a> e <a href="https://www.ibge.gov.br/indicadores/inflacao" target="_blank" rel="noopener">painel de indicadores</a>.</p><p>Base: dezembro/2013 = 100. Valores corrigidos por capitalização das taxas anuais do IPCA de 2014 a 2025 e pelo acumulado de janeiro a setembro de 2026 (3,95%). Valores nominais: mestrado R$ 1.500 até 2022 e R$ 2.100 de 2023 em diante; doutorado R$ 2.200 até 2022 e R$ 3.100 de 2023 em diante. Cada ponto anual refere-se a dezembro, salvo set/2026. Os valores são arredondados para exibição. Esta é uma prévia; uma versão pública deve usar os índices e as datas de reajuste mensais para resultados com maior precisão.</p></footer>
+ <section class="card power"><h2 class="sect-title">Poder de compra da bolsa</h2><p class="sect-sub">Referência fixa: abril de 2013 (100%). Inclui o reajuste de fevereiro/2023.</p><div class="plotbox"><svg id="power-chart" viewBox="0 0 1030 205" role="img" aria-label="Índice de poder de compra da bolsa em porcentagem"></svg></div><div class="mini-legend">100% = poder de compra em abril/2013. Dados mensais de abril a setembro/2026.</div></section>
+ <footer class="sources"><strong>Fontes e metodologia</strong><p>Valores das bolsas: <a href="https://www.gov.br/capes/pt-br/acesso-a-informacao/acoes-e-programas/bolsas/prestacao-de-contas/valores-de-bolsas" target="_blank" rel="noopener">CAPES</a> e <a href="https://www.gov.br/capes/pt-br/centrais-de-conteudo/documentos/19032026_PNPG_20252029_FINALV4.pdf" target="_blank" rel="noopener">Plano Nacional de Pós-Graduação 2025–2029</a>. IPCA: <a href="https://www.ibge.gov.br/estatisticas/economicas/precos-e-custos/9256-indice-nacional-de-precos-ao-consumidoramplo.html?edicao=20932&t=series-historicas" target="_blank" rel="noopener">série histórica IBGE</a> e <a href="https://www.ibge.gov.br/indicadores/inflacao" target="_blank" rel="noopener">painel de indicadores</a>.</p><p>IPCA mensal extraído da planilha IBGE “Variação mensal durante o Plano Real” fornecida para este projeto (último mês: setembro/2026). Para comparar uma bolsa de um mês-base com setembro/2026, são multiplicados os fatores (1 + IPCA/100) dos meses seguintes ao mês-base até setembro/2026, sem antecipar inflação ainda não divulgada. A linha verde do primeiro gráfico e o gráfico de poder de compra têm base fixa em abril/2013; o cartão “Quanto deveria valer hoje” usa a data selecionada. Em abril/2013, as bolsas de mestrado e doutorado passaram a R$ 1.500 e R$ 2.200, respectivamente. Novo reajuste com efeito em fevereiro/2023: R$ 2.100 e R$ 3.100. Nos gráficos, o primeiro ponto representa abril/2013; de 2014 a março/2026, cada ponto anual representa março; de abril a setembro/2026, cada mês é mostrado. Exibição em reais arredondados, cálculo interno sem arredondamentos intermediários. “Hoje” significa o valor nominal vigente comparado ao poder de compra de setembro/2026.</p><p><a href="https://www.gov.br/capes/pt-br/assuntos/noticias/governo-vai-reajustar-a-partir-de-abril-valores-de-bolsas-de-pos-graduacao" target="_blank" rel="noopener">Reajuste de 2013</a> · <a href="https://www.gov.br/capes/pt-br/assuntos/noticias/capes-e-cnpq-aumentam-bolsas-de-pos-graduacao-em-40/" target="_blank" rel="noopener">Reajuste de 2023</a>.</p></footer>
 </div>
 <script>
 'use strict';
-const annual = {2014:6.41,2015:10.67,2016:6.29,2017:2.95,2018:3.75,2019:4.31,2020:4.52,2021:10.06,2022:5.79,2023:4.62,2024:4.83,2025:4.26,2026:3.95};
-const data = []; let factor=1;
-for(let year=2013;year<=2026;year++){
- if(year!==2013) factor *= 1+annual[year]/100;
- data.push({year,label:year===2026?'set/26':String(year),full:year===2026?'Setembro de 2026':`Dezembro de ${year}`,factor,
-   mestrado:year<2023?1500:2100,doutorado:year<2023?2200:3100});
+// IPCA mensal (%) extraído do arquivo fornecido para este site.
+// Referência no mês-base é um valor ao FIM do mês. A atualização começa no mês seguinte.
+const ipca = {
+  "2013-03": 0.47, "2013-04": 0.55, "2013-05": 0.37, "2013-06": 0.26, "2013-07": 0.03, "2013-08": 0.24,
+  "2013-09": 0.35, "2013-10": 0.57, "2013-11": 0.54, "2013-12": 0.92, "2014-01": 0.55, "2014-02": 0.69,
+  "2014-03": 0.92, "2014-04": 0.67, "2014-05": 0.46, "2014-06": 0.4, "2014-07": 0.01, "2014-08": 0.25,
+  "2014-09": 0.57, "2014-10": 0.42, "2014-11": 0.51, "2014-12": 0.78, "2015-01": 1.24, "2015-02": 1.22,
+  "2015-03": 1.32, "2015-04": 0.71, "2015-05": 0.74, "2015-06": 0.79, "2015-07": 0.62, "2015-08": 0.22,
+  "2015-09": 0.54, "2015-10": 0.82, "2015-11": 1.01, "2015-12": 0.96, "2016-01": 1.27, "2016-02": 0.9,
+  "2016-03": 0.43, "2016-04": 0.61, "2016-05": 0.78, "2016-06": 0.35, "2016-07": 0.52, "2016-08": 0.44,
+  "2016-09": 0.08, "2016-10": 0.26, "2016-11": 0.18, "2016-12": 0.3, "2017-01": 0.38, "2017-02": 0.33,
+  "2017-03": 0.25, "2017-04": 0.14, "2017-05": 0.31, "2017-06": -0.23, "2017-07": 0.24, "2017-08": 0.19,
+  "2017-09": 0.16, "2017-10": 0.42, "2017-11": 0.28, "2017-12": 0.44, "2018-01": 0.29, "2018-02": 0.32,
+  "2018-03": 0.09, "2018-04": 0.22, "2018-05": 0.4, "2018-06": 1.26, "2018-07": 0.33, "2018-08": -0.09,
+  "2018-09": 0.48, "2018-10": 0.45, "2018-11": -0.21, "2018-12": 0.15, "2019-01": 0.32, "2019-02": 0.43,
+  "2019-03": 0.75, "2019-04": 0.57, "2019-05": 0.13, "2019-06": 0.01, "2019-07": 0.19, "2019-08": 0.11,
+  "2019-09": -0.04, "2019-10": 0.1, "2019-11": 0.51, "2019-12": 1.15, "2020-01": 0.21, "2020-02": 0.25,
+  "2020-03": 0.07, "2020-04": -0.31, "2020-05": -0.38, "2020-06": 0.26, "2020-07": 0.36, "2020-08": 0.24,
+  "2020-09": 0.64, "2020-10": 0.86, "2020-11": 0.89, "2020-12": 1.35, "2021-01": 0.25, "2021-02": 0.86,
+  "2021-03": 0.93, "2021-04": 0.31, "2021-05": 0.83, "2021-06": 0.53, "2021-07": 0.96, "2021-08": 0.87,
+  "2021-09": 1.16, "2021-10": 1.25, "2021-11": 0.95, "2021-12": 0.73, "2022-01": 0.54, "2022-02": 1.01,
+  "2022-03": 1.62, "2022-04": 1.06, "2022-05": 0.47, "2022-06": 0.67, "2022-07": -0.68, "2022-08": -0.36,
+  "2022-09": -0.29, "2022-10": 0.59, "2022-11": 0.41, "2022-12": 0.62, "2023-01": 0.53, "2023-02": 0.84,
+  "2023-03": 0.71, "2023-04": 0.61, "2023-05": 0.23, "2023-06": -0.08, "2023-07": 0.12, "2023-08": 0.23,
+  "2023-09": 0.26, "2023-10": 0.24, "2023-11": 0.28, "2023-12": 0.56, "2024-01": 0.42, "2024-02": 0.83,
+  "2024-03": 0.16, "2024-04": 0.38, "2024-05": 0.46, "2024-06": 0.21, "2024-07": 0.38, "2024-08": -0.02,
+  "2024-09": 0.44, "2024-10": 0.56, "2024-11": 0.39, "2024-12": 0.52, "2025-01": 0.16, "2025-02": 1.31,
+  "2025-03": 0.56, "2025-04": 0.43, "2025-05": 0.26, "2025-06": 0.24, "2025-07": 0.26, "2025-08": -0.11,
+  "2025-09": 0.48, "2025-10": 0.09, "2025-11": 0.18, "2025-12": 0.33, "2026-01": 0.33, "2026-02": 0.7,
+  "2026-03": 0.88, "2026-04": 0.67, "2026-05": 0.58, "2026-06": 0.16, "2026-07": 0.07, "2026-08": -0.32,
+  "2026-09": 0.82
+};
+const monthNames = ['','janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
+const allMonths = Object.keys(ipca).sort();
+const latestMonth = allMonths[allMonths.length-1];
+const fmtMonth = ym => { const [y,m]=ym.split('-').map(Number); return `${monthNames[m][0].toUpperCase()}${monthNames[m].slice(1)} de ${y}`; };
+const periodLabels = [];
+periodLabels.push('2013-04');
+for(let y=2014;y<=2026;y++) periodLabels.push(`${y}-03`);
+for(let m=4;m<=9;m++) periodLabels.push(`2026-${String(m).padStart(2,'0')}`);
+// Data de início de vigência do valor mensal (não data em que caiu na conta).
+const scholarshipHistory = {
+ mestrado:[['2013-04',1500],['2023-02',2100]],
+ doutorado:[['2013-04',2200],['2023-02',3100]]
+};
+function nominalAt(kind,month){let value=null;for(const [since,amount] of scholarshipHistory[kind]) if(month>=since)value=amount;return value;}
+// Número-índice encadeado do IPCA (o mês inicial de normalização é março/2013; a comparação começa em abril/2013).
+const priceIndex = {'2013-03':1};
+for(let i=1;i<allMonths.length;i++){
+ const ym=allMonths[i];priceIndex[ym]=priceIndex[allMonths[i-1]]*(1+ipca[ym]/100);
 }
+function ipcaFactor(from,to=latestMonth){if(!(from in priceIndex)||!(to in priceIndex)||from>to)throw Error('Período do IPCA inválido');return priceIndex[to]/priceIndex[from];}
+const data=periodLabels.map((month,i)=>{
+ const [year,mo]=month.split('-').map(Number);
+ return {month, year, label:year<2026?String(year):`${String(mo).padStart(2,'0')}/26`,full:fmtMonth(month),factor:priceIndex[month],mestrado:nominalAt('mestrado',month),doutorado:nominalAt('doutorado',month)};
+});
+const currentNominal={mestrado:nominalAt('mestrado',latestMonth),doutorado:nominalAt('doutorado',latestMonth)};
 const brl=n=>n.toLocaleString('pt-BR',{style:'currency',currency:'BRL',maximumFractionDigits:0});
-const pct=n=>n.toLocaleString('pt-BR',{maximumFractionDigits:1})+'%';
-const ns='http://www.w3.org/2000/svg';let kind='mestrado', idx=data.length-1;
-function el(tag,atts={},text){const e=document.createElementNS(ns,tag);for(const [k,v] of Object.entries(atts))e.setAttribute(k,v);if(text!==undefined)e.textContent=text;return e}
+const pct=n=>n.toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1})+'%';
+const ns='http://www.w3.org/2000/svg';
+let kind='mestrado',idx=0;
+function el(tag,atts={},text){const e=document.createElementNS(ns,tag);for(const [k,v] of Object.entries(atts))e.setAttribute(k,v);if(text!==undefined)e.textContent=text;return e;}
+function shouldLabel(d,i){return (d.year<2026 && (d.year%2===1 || d.year===2025)) || (d.year===2026 && [3,6,9].includes(Number(d.month.slice(5))));}
 function paths(svg,W,H,left,right,top,bottom,min,max,nom,cor,selected=idx){
- svg.replaceChildren(); const x=i=>left+(W-left-right)*i/(data.length-1);const y=v=>H-bottom-(v-min)/(max-min)*(H-top-bottom);
- for(let i=0;i<5;i++){const val=min+(max-min)*i/4,p=y(val);svg.append(el('line',{x1:left,y1:p,x2:W-right,y2:p,stroke:'#39515a','stroke-dasharray':'3 6','stroke-width':'1'}));svg.append(el('text',{x:left-9,y:p+4,'font-size':'12','text-anchor':'end',fill:'#a1b6bd'},Math.round(val).toLocaleString('pt-BR')))}
- data.forEach((d,i)=>{if(i%2===0||i===data.length-1){svg.append(el('text',{x:x(i),y:H-10,'text-anchor':'middle','font-size':'11',fill:'#a1b6bd'},d.label))}});
+ svg.replaceChildren();const x=i=>left+(W-left-right)*i/(data.length-1);const y=v=>H-bottom-(v-min)/(max-min)*(H-top-bottom);
+ for(let i=0;i<5;i++){
+  const val=min+(max-min)*i/4,p=y(val);
+  svg.append(el('line',{x1:left,y1:p,x2:W-right,y2:p,stroke:'#39515a','stroke-dasharray':'3 6','stroke-width':'1'}));
+  svg.append(el('text',{x:left-9,y:p+4,'font-size':'12','text-anchor':'end',fill:'#a1b6bd'},Math.round(val).toLocaleString('pt-BR')));
+ }
+ data.forEach((d,i)=>{if(shouldLabel(d,i))svg.append(el('text',{x:x(i),y:H-10,'text-anchor':'middle','font-size':'11',fill:'#a1b6bd'},d.label));});
  const line=arr=>arr.map((v,i)=>(i?'L':'M')+x(i).toFixed(1)+' '+y(v).toFixed(1)).join(' ');
  svg.append(el('path',{d:line(cor),fill:'none',stroke:'#6fe3b9','stroke-width':'3','stroke-linejoin':'round'}));
  svg.append(el('path',{d:line(nom),fill:'none',stroke:'#7ec4f5','stroke-width':'3','stroke-linejoin':'round'}));
@@ -105,46 +178,67 @@ function paths(svg,W,H,left,right,top,bottom,min,max,nom,cor,selected=idx){
  return {x,y};
 }
 function renderLine(){
- const svg=document.getElementById('line-chart'),W=680,H=340;
- const base=kind==='mestrado'?1500:2200;
- const nominal=data.map(d=>d[kind]), corrected=data.map(d=>base*d.factor);
- const low=Math.floor(base/1000)*1000,max=Math.ceil((Math.max(...corrected)+180)/500)*500;
+ const svg=document.getElementById('line-chart'),W=680,H=340,nominal=data.map(d=>d[kind]);
+ const base=nominalAt(kind,'2013-04'), corrected=data.map(d=>base*ipcaFactor('2013-04',d.month));
+ const low=Math.floor(Math.min(...nominal,...corrected)/500)*500;
+ const max=Math.ceil((Math.max(...nominal,...corrected)+180)/500)*500;
  const xy=paths(svg,W,H,55,20,15,34,low,max,nominal,corrected);
  const tooltip=document.getElementById('tooltip'),plot=document.getElementById('main-plot');
  data.forEach((d,i)=>{
-  let point=el('rect',{x:xy.x(i)-13,y:15,width:26,height:290,fill:'transparent','tabindex':'0','aria-label':d.full+', bolsa nominal '+brl(nominal[i])+', corrigida '+brl(corrected[i])});svg.append(point);
-  function show(){tooltip.innerHTML=`<strong>${d.full}</strong><div class="blue">Nominal: ${brl(nominal[i])}</div><div class="green">Corrigido: ${brl(corrected[i])}</div>`;tooltip.style.display='block';const rect=plot.getBoundingClientRect();const xx=(xy.x(i)/W)*rect.width;tooltip.style.left=Math.min(Math.max(0,xx-70),rect.width-155)+'px';tooltip.style.top='18px'}
-  point.addEventListener('mouseenter',show);point.addEventListener('focus',show);point.addEventListener('mouseleave',()=>tooltip.style.display='none');point.addEventListener('blur',()=>tooltip.style.display='none');point.addEventListener('click',()=>{idx=i;document.getElementById('range').value=i;render()});
+  const point=el('rect',{x:xy.x(i)-Math.max(6,Math.min(13,250/data.length)),y:15,width:Math.max(12,Math.min(26,500/data.length)),height:290,fill:'transparent','tabindex':'0','aria-label':d.full+', bolsa nominal '+brl(nominal[i])+', bolsa de abril/2013 corrigida '+brl(corrected[i])});
+  svg.append(point);
+  function show(){tooltip.innerHTML=`<strong>${d.full}</strong><div class="blue">Bolsa do mês: ${brl(nominal[i])}</div><div class="green">Abr/2013 corrigido: ${brl(corrected[i])}</div>`;tooltip.style.display='block';const rect=plot.getBoundingClientRect();const xx=(xy.x(i)/W)*rect.width;tooltip.style.left=Math.min(Math.max(0,xx-70),Math.max(0,rect.width-165))+'px';tooltip.style.top='18px';}
+  point.addEventListener('mouseenter',show);point.addEventListener('focus',show);
+  point.addEventListener('mouseleave',()=>tooltip.style.display='none');point.addEventListener('blur',()=>tooltip.style.display='none');
+  point.addEventListener('click',()=>{idx=i;document.getElementById('range').value=i;render();});
  });
 }
 function renderPower(){
- const svg=document.getElementById('power-chart'),W=1030,H=205,left=45,right=22,top=13,bottom=30,min=45,max=105;
- const base=kind==='mestrado'?1500:2200;
- const series=data.map(d=>100*d[kind]/(base*d.factor));
- const x=i=>left+(W-left-right)*i/(data.length-1);const y=v=>H-bottom-(v-min)/(max-min)*(H-top-bottom);
+ const svg=document.getElementById('power-chart'),W=1030,H=205,left=45,right=22,top=13,bottom=30;
+ const base=nominalAt(kind,'2013-04');
+ const series=data.map(d=>100*d[kind]/(base*ipcaFactor('2013-04',d.month)));
+ const min=Math.floor((Math.min(...series)-8)/10)*10,max=Math.ceil((Math.max(100,...series)+7)/10)*10;
+ const x=i=>left+(W-left-right)*i/(data.length-1),y=v=>H-bottom-(v-min)/(max-min)*(H-top-bottom);
  svg.replaceChildren();
- [50,60,70,80,90,100].forEach(v=>{svg.append(el('line',{x1:left,y1:y(v),x2:W-right,y2:y(v),stroke:v===100?'#6fe3b9':'#39515a','stroke-width':'1','stroke-dasharray':'4 5',opacity:v===100?'.7':'1'}));svg.append(el('text',{x:left-9,y:y(v)+4,'text-anchor':'end','font-size':'12',fill:'#a1b6bd'},v+'%'))});
- const points=series.map((v,i)=>[x(i),y(v)]);svg.append(el('path',{d:points.map((p,i)=>(i?'L':'M')+p.join(' ')).join(' '),stroke:'#ffb78b','stroke-width':'3',fill:'none','stroke-linejoin':'round'}));
- data.forEach((d,i)=>{if(i%2===0||i===13)svg.append(el('text',{x:x(i),y:H-9,'text-anchor':'middle','font-size':'11',fill:'#a1b6bd'},d.label))});
+ for(let v=Math.ceil(min/10)*10;v<=max;v+=10){
+  svg.append(el('line',{x1:left,y1:y(v),x2:W-right,y2:y(v),stroke:v===100?'#6fe3b9':'#39515a','stroke-width':'1','stroke-dasharray':'4 5',opacity:v===100?'.7':'1'}));
+  svg.append(el('text',{x:left-9,y:y(v)+4,'text-anchor':'end','font-size':'12',fill:'#a1b6bd'},v+'%'));
+ }
+ svg.append(el('path',{d:series.map((v,i)=>(i?'L':'M')+x(i).toFixed(1)+' '+y(v).toFixed(1)).join(' '),stroke:'#ffb78b','stroke-width':'3',fill:'none','stroke-linejoin':'round'}));
+ data.forEach((d,i)=>{if(shouldLabel(d,i))svg.append(el('text',{x:x(i),y:H-9,'text-anchor':'middle','font-size':'11',fill:'#a1b6bd'},d.label));});
  svg.append(el('circle',{cx:x(idx),cy:y(series[idx]),r:6,stroke:'#0b1e27','stroke-width':2,fill:'#ffb78b'}));
  svg.append(el('text',{x:Math.max(left+29,Math.min(W-60,x(idx))),y:Math.max(12,y(series[idx])-13),'text-anchor':'middle','font-size':'13','font-weight':'bold',fill:'#ffb78b'},pct(series[idx])));
 }
-function render(){const d=data[idx],base=kind==='mestrado'?1500:2200;const nominal=d[kind],corrected=base*d.factor,loss=Math.max(0,corrected-nominal),power=nominal/corrected*100;
+function render(){
+ const d=data[idx],historical=d[kind],now=currentNominal[kind],corrected=historical*ipcaFactor(d.month);
+ const loss=Math.max(0,corrected-now),extra=Math.max(0,now-corrected),power=100*now/corrected;
  document.getElementById('year-label').textContent=d.full;
- document.getElementById('actual-value').textContent=brl(nominal);
+ document.getElementById('actual-value').textContent=brl(historical);
+ document.getElementById('actual-desc').textContent='Valor nominal em '+d.month.slice(5)+'/'+d.year;
  document.getElementById('corrected-value').textContent=brl(corrected);
  document.getElementById('loss-value').textContent=brl(loss);
- document.getElementById('loss-desc').textContent=pct(100-power)+' de poder de compra perdido';
- document.getElementById('comparison-description').textContent='Em '+d.full.toLowerCase();
- document.getElementById('bar-actual-label').textContent=brl(nominal);
+ document.getElementById('loss-desc').textContent=extra>0?'Bolsa supera a referência em '+brl(extra):'Comparação com a bolsa vigente: '+brl(now);
+ document.getElementById('comparison-description').textContent='Com o IPCA acumulado até setembro de 2026';
+ document.getElementById('comparison-base').textContent='em '+d.full.toLowerCase();
+ document.getElementById('bar-actual-label').textContent=brl(now);
  document.getElementById('bar-corrected-label').textContent=brl(corrected);
- document.getElementById('bar-actual').style.width=(nominal/corrected*100)+'%';
- document.getElementById('bar-corrected').style.width='100%';
- document.getElementById('insight').innerHTML=`A bolsa preserva <strong>${pct(power)}</strong> do poder de compra de 2013. Para recuperar esse valor real, o aumento necessário seria de <strong>${brl(loss)}</strong> por mês.`;
+ document.getElementById('bar-gap-label').textContent=brl(loss);
+ const filled=Math.max(0,Math.min(100,100*now/corrected));
+ document.getElementById('bar-actual').style.width=filled+'%';
+ document.getElementById('bar-missing').style.display=loss>0.005?'block':'none';
+ document.getElementById('goaltrack').setAttribute('aria-label',`Bolsa vigente ${brl(now)}, valor corrigido ${brl(corrected)}, diferença ${brl(loss)}`);
+ document.getElementById('insight').innerHTML=loss>0.005
+  ?`A bolsa atual preserva <strong>${pct(power)}</strong> do poder de compra que a bolsa tinha em ${d.full.toLowerCase()}. Seriam necessários <strong>mais ${brl(loss)} por mês</strong> para igualá-lo.`
+  :`A bolsa atual já iguala ou supera o poder de compra de ${d.full.toLowerCase()} (${pct(power)} da referência).`;
  renderLine();renderPower();
 }
-document.querySelectorAll('[data-kind]').forEach(b=>b.addEventListener('click',()=>{kind=b.dataset.kind;document.querySelectorAll('[data-kind]').forEach(x=>{x.classList.toggle('active',x===b);x.setAttribute('aria-pressed',String(x===b))});render()}));
-document.getElementById('range').addEventListener('input',e=>{idx=Number(e.target.value);render()});
+document.querySelectorAll('[data-kind]').forEach(b=>b.addEventListener('click',()=>{
+ kind=b.dataset.kind;
+ document.querySelectorAll('[data-kind]').forEach(x=>{x.classList.toggle('active',x===b);x.setAttribute('aria-pressed',String(x===b));});
+ render();
+}));
+const range=document.getElementById('range');range.max=String(data.length-1);range.value=String(idx);
+range.addEventListener('input',e=>{idx=Number(e.target.value);render();});
 render();
 </script>
 </body>
