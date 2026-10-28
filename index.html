@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#09151b" />
-  <title>Quanto Vale Minha Bolsa? — IPCA e bolsas de pesquisa</title>
+  <title>Quanto valeria a minha bolsa corrigida pela inflação?</title>
   <style>
     :root{color-scheme:dark;--bg:#09151b;--pane:#10222b;--pane2:#142a34;--edge:#25414b;--text:#edf6f6;--muted:#a1b6bd;--actual:#7ec4f5;--corrected:#6fe3b9;--loss:#ffb78b;--shadow:0 16px 35px #0003}
     *{box-sizing:border-box}
@@ -90,10 +90,10 @@
  </section>
  <section class="stats" aria-label="Indicadores">
   <div class="stat actual"><div class="name" id="actual-heading">Bolsa em abril de 2013</div><strong id="actual-value">—</strong><small id="actual-desc">Valor histórico nominal</small></div>
-  <div class="stat corrected"><div class="name">Quanto deveria valer hoje</div><strong id="corrected-value">—</strong><small>Valor corrigido até set/2026</small></div>
+  <div class="stat corrected"><div class="name">Quanto valeria hoje com correção pelo IPCA</div><strong id="corrected-value">—</strong><small>Valor corrigido até set/2026</small></div>
  </section>
  <div class="plots">
-  <section class="card"><h2 class="sect-title">O reajuste acompanha a inflação?</h2><p class="sect-sub">Evolução mensal de abr/2013 a set/2026. A linha azul registra o reajuste em um salto; a verde tracejada acompanha o IPCA.</p><div class="plotbox" id="main-plot"><svg id="line-chart" viewBox="0 0 680 340" role="img" aria-label="Histórico da bolsa nominal em comparação ao valor corrigido pelo IPCA"></svg><div class="tooltip" id="tooltip"></div></div><div class="legend"><span><i class="dot"></i>Bolsa nominal</span><span><i class="dot green"></i>Valor com correção (tracejado)</span></div></section>
+  <section class="card"><h2 class="sect-title">O reajuste acompanha a inflação?</h2><p class="sect-sub">Evolução mensal de abr/2013 a set/2026. A linha azul registra o valor nominal da bolsa; a verde tracejada acompanha o valor que a bolsa teria caso fosse corrigida pelo IPCA</p><div class="plotbox" id="main-plot"><svg id="line-chart" viewBox="0 0 680 340" role="img" aria-label="Histórico da bolsa nominal em comparação ao valor corrigido pelo IPCA"></svg><div class="tooltip" id="tooltip"></div></div><div class="legend"><span><i class="dot"></i>Bolsa nominal</span><span><i class="dot green"></i>Valor com correção (tracejado)</span></div></section>
   <section class="card"><h2 class="sect-title">Quanto deveria valer a bolsa hoje?</h2><p class="sect-sub" id="comparison-description">Preservando o poder de compra de abril de 2013</p>
    <div class="comparison" aria-label="Comparação da bolsa atual com o valor corrigido">
     <p class="target-caption">Para ter hoje o <strong>mesmo poder de compra</strong> que tinha <strong id="comparison-base">em abril de 2013</strong>, a bolsa deveria ser:</p>
