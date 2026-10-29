@@ -216,7 +216,7 @@
           <button class="option" type="button" data-period="2023-03" aria-pressed="false">Março de 2023</button>
         </div>
       </div>
-      <p class="note" id="period-note">Abril de 2013 após o reajuste daquele ano; março de 2023 após o reajuste de fevereiro de 2023.</p>
+      <p class="note" id="period-note">Abril de 2013 após o reajuste daquele ano; março de 2023 após o reajuste daquele ano.</p>
     </section>
     </div>
     <!-- A comparação principal aparece primeiro, também nas telas pequenas. -->
@@ -240,7 +240,6 @@
     <div class="plots">
       <section class="panel" aria-labelledby="history-title">
         <h2 class="section-title" id="history-title">O reajuste acompanha a inflação?</h2>
-        <p class="section-sub" id="history-desc">Evolução mensal de abr/2013 a set/2026. A linha azul registra o valor nominal da bolsa; a verde tracejada acompanha o valor que a bolsa teria caso fosse corrigida pelo IPCA.</p>
         <div class="plotbox" id="main-plot"><svg id="line-chart" viewBox="0 0 680 340" role="img" aria-label="Valor mensal nominal e valor corrigido pela inflação"></svg><div class="tooltip" id="tooltip"></div></div>
         <div class="legend"><span><i class="line-key"></i>Bolsa nominal</span><span><i class="line-key green"></i>Valor com correção (tracejado)</span></div>
       </section>
@@ -249,7 +248,6 @@
       <h2 class="section-title" id="power-title">Poder de compra da bolsa</h2>
       <p class="section-sub" id="power-description">Referência fixa: abril de 2013 (100%). Reajuste em fevereiro/2023.</p>
       <div class="plotbox"><svg id="power-chart" viewBox="0 0 1030 240" role="img" aria-label="Poder de compra da bolsa desde abril de 2013, em porcentagem"></svg></div>
-      <p class="footnote">100% = poder de compra em abril/2013. Dados mensais de abr/2013 a set/2026. Os valores consideram as mensalidades de referência, não eventuais complementações institucionais.</p>
     </section>
     <details class="sources">
       <summary>Fontes utilizadas</summary>
@@ -461,13 +459,8 @@ function render(){
   insight.replaceChildren();
   if(gap>.005) insight.append('A bolsa atual preserva ',makeBold(percent(power)),' do poder de compra que a bolsa tinha em '+formatMonth(base).toLowerCase()+'. Seriam necessários ',makeBold('mais '+money(gap)+' por mês'),' para igualá-lo.');
   else insight.append('A bolsa atual já iguala ou supera o poder de compra de '+formatMonth(base).toLowerCase()+' (',makeBold(percent(power)),' da referência).');
-  $('history-desc').textContent=`Evolução mensal de abr/2013 a set/2026 para ${item.label.toLowerCase()}. A linha azul registra o valor nominal da bolsa, com saltos nos reajustes; a verde tracejada acompanha o valor que a bolsa teria caso fosse corrigida pelo IPCA a partir de ${formatMonth(base).toLowerCase()}.`;
   $('power-description').textContent=`Referência fixa: abril de 2013 (100%). Reajuste em ${item.history[1][0]==='2023-03'?'março':'fevereiro'}/2023.`;
-  $('period-note').textContent=kind==='ic'
-    ? 'Abril de 2013 considera o valor vigente naquele mês; março de 2023 já inclui o reajuste da Iniciação Científica do CNPq.'
-    : page==='principal'
-      ? 'Abril de 2013 após o reajuste daquele ano; março de 2023 após o reajuste de fevereiro de 2023.'
-      : 'Abril de 2013 considera o valor vigente naquele mês; março de 2023 já inclui o reajuste de fevereiro de 2023.';
+  $('period-note').textContent='Abril de 2013 após o reajuste daquele ano; março de 2023 após o reajuste daquele ano.';
   $('line-chart').setAttribute('aria-label',`Histórico da bolsa de ${item.label}, com referência em ${formatMonth(base)}`);
   drawLine();drawPower();
 }
@@ -479,7 +472,7 @@ const pageContent = {
   },
   outras: {
     heading: 'Graduação e outras bolsas CAPES',
-    intro: 'O que aconteceria se as bolsas de graduação, supervisão e coordenação do PIBID tivessem acompanhado a inflação? Compare o poder de compra da Iniciação Científica (CNPq), da Iniciação à Docência e das bolsas de supervisão e coordenação do PIBID/CAPES em abril de 2013 e março de 2023, após os reajustes, com setembro de 2026. Veja também a evolução histórica desde 2013.',
+    intro: 'O que aconteceria se as bolsas de graduação, supervisão e coordenação do PIBID tivessem acompanhado a inflação? Compare o poder de compra da Iniciação Científica (CNPq), da Iniciação à Docência e das bolsas de supervisão e coordenação do PIBID/CAPES em abril de 2013 e março de 2023, após os reajustes, com setembro de 2026.',
     defaultKind: 'ic'
   }
 };
